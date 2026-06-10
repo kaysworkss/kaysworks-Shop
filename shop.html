@@ -1997,6 +1997,20 @@ function showToast(msg, dur=2800) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), dur);
 }
+async function fetchWithFallback(path, options = {}, fallback = '') {
+  const first = await fetch(path, options);
+  if (first.ok || !fallback) return first;
+  return fetch(fallback, options);
+}
+async function readApiError(res) {
+  try {
+    const data = await res.json();
+    return data?.error || data?.message || `HTTP ${res.status}`;
+  } catch (_) {
+    try { return (await res.text()).slice(0, 180) || `HTTP ${res.status}`; }
+    catch (_) { return `HTTP ${res.status}`; }
+  }
+}
 function printOptionKey(type, size) { return `${type}|${size}`; }
 function labelPrintOption(type, size) { return `${type}  -  ${size}`; }
 function keySize(key) { return String(key || '').includes('|') ? String(key).split('|').pop() : String(key || ''); }
@@ -3483,10 +3497,10 @@ document.getElementById('adminPanel').addEventListener('click', e=>{
 document.getElementById('adminLoginBtn').addEventListener('click', async ()=>{
   const pw = document.getElementById('adminPwInput').value;
   try {
-    const res = await fetchWithFallback('/api/admin/login', {
+    const res = await fetchWithFallback('/.netlify/functions/shop-admin?action=login', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ password: pw }),
-    }, '/.netlify/functions/shop-admin?action=login');
+    });
     if (res.ok) {
       const { token } = await res.json();
       localStorage.setItem('kaysworks-admin-token', token);
@@ -4942,8 +4956,8 @@ if (paystackMeta) window.__PAYSTACK_KEY__ = paystackMeta.content;
 async function loadShopData() {
   try {
     const [productsRes, configRes] = await Promise.all([
-      fetchWithFallback('/api/shop/products', {}, '/.netlify/functions/shop?action=shop-products'),
-      fetchWithFallback('/api/shop/config', {}, '/.netlify/functions/shop?action=shop-config'),
+      fetch('/.netlify/functions/shop?action=shop-products'),
+      fetch('/.netlify/functions/shop?action=shop-config'),
     ]);
 
     if (productsRes.ok) {
