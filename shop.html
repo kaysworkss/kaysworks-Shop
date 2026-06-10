@@ -3483,10 +3483,10 @@ document.getElementById('adminPanel').addEventListener('click', e=>{
 document.getElementById('adminLoginBtn').addEventListener('click', async ()=>{
   const pw = document.getElementById('adminPwInput').value;
   try {
-    const res = await fetch('/api/admin/login', {
+    const res = await fetchWithFallback('/api/admin/login', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ password: pw }),
-    });
+    }, '/.netlify/functions/shop-admin?action=login');
     if (res.ok) {
       const { token } = await res.json();
       localStorage.setItem('kaysworks-admin-token', token);
@@ -3495,7 +3495,7 @@ document.getElementById('adminLoginBtn').addEventListener('click', async ()=>{
       document.getElementById('adminConfig').style.display='';
       renderAdminProducts();
       loadAdminConfig();
-    } else { showToast('Incorrect password'); }
+    } else { const msg = await readApiError(res); showToast(msg === 'Incorrect password' ? 'Incorrect password' : 'Login failed: ' + msg, 5000); }
   } catch(_) { showToast('Server error'); }
 });
 
@@ -4942,8 +4942,8 @@ if (paystackMeta) window.__PAYSTACK_KEY__ = paystackMeta.content;
 async function loadShopData() {
   try {
     const [productsRes, configRes] = await Promise.all([
-      fetch('/api/shop/products'),
-      fetch('/api/shop/config'),
+      fetchWithFallback('/api/shop/products', {}, '/.netlify/functions/shop?action=shop-products'),
+      fetchWithFallback('/api/shop/config', {}, '/.netlify/functions/shop?action=shop-config'),
     ]);
 
     if (productsRes.ok) {

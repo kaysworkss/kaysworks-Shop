@@ -464,11 +464,12 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   const btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = 'Checking?';
   try {
-    const res = await fetch('/api/admin/login', {
+    const res = await fetchAdmin('/api/admin/login', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ password: pw }),
+      fallback: '/.netlify/functions/shop-admin?action=login',
     });
-    if (!res.ok) { showToast('Incorrect password'); return; }
+    if (!res.ok) { const msg = await readError(res); showToast(msg === 'Incorrect password' ? 'Incorrect password' : 'Login failed: ' + msg, 5000); return; }
     const { token } = await res.json();
     _token = token;
     localStorage.setItem('kaysworks-admin-token', token);
