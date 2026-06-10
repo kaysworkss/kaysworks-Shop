@@ -28,6 +28,16 @@
   status = 200
   force  = true
 [[redirects]]
+  from = "/api/shop/order-create"
+  to   = "/.netlify/functions/shop?action=shop-order-create"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/shop/order-confirm"
+  to   = "/.netlify/functions/shop?action=shop-order-confirm"
+  status = 200
+  force  = true
+[[redirects]]
   from = "/api/shop/order"
   to   = "/.netlify/functions/shop?action=shop-order"
   status = 200

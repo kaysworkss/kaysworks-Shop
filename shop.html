@@ -3177,27 +3177,47 @@ function revealManualCryptoFields(chain) {
   const fields = document.getElementById(chain === 'tezos' ? 'tezosManualFields' : 'ethManualFields');
   const btn = document.getElementById(chain === 'tezos' ? 'tezosManualBtn' : 'cryptoConfirmBtn');
   if (!fields || !btn) return false;
-  if (fields.style.display === 'none' || !fields.style.display) {
+  // Use an explicit flag rather than checking style.display, because once shown
+  // display is '' (falsy) and the old check re-revealed on every click, trapping
+  // the user in a loop that never submitted.
+  if (fields.dataset.revealed !== '1') {
+    fields.dataset.revealed = '1';
     fields.style.display = '';
     btn.textContent = 'Confirm manual payment';
     const firstInput = fields.querySelector('input');
     if (firstInput) firstInput.focus();
-    return true;
+    return true;   // first click: just reveal
   }
-  return false;
+  return false;    // already revealed: allow submit to proceed
 }
 
-function submitManualCrypto(chain) {
+async function submitManualCrypto(chain) {
   if (!validateForm()) return;
   if (revealManualCryptoFields(chain)) return;
   const proof = getManualCryptoProof(chain);
   if (!proof) return;
   const d = getFormData();
   const method = chain === 'tezos' ? 'tezos' : 'eth';
-  const ref = proof.payment_ref;
-  getServerCheckoutQuote(d, method, proof)
-    .then(q => notifyOrder(d, ref, method, q.quote).then(() => showConfirmation(method, ref)))
-    .catch(e => showToast(e.message || 'Could not confirm crypto order'));
+  const btn = document.getElementById(chain === 'tezos' ? 'tezosManualBtn' : 'cryptoConfirmBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Confirming…'; }
+  try {
+    // Quote (for amount/verification context), then create a pending order so
+    // the items are recorded server-side, then confirm payment by order_ref.
+    const q = await getServerCheckoutQuote(d, method, proof);
+    const pending = await createPendingOrder(d, method, q.quote);
+    await confirmPendingOrder(pending.order_ref, {
+      payment_method: method,
+      payment_ref: proof.payment_ref,
+      payer_address: proof.payer_address,
+      checkout_quote: q.quote,
+    });
+    clearPendingOrder(pending.order_ref);
+    showConfirmation(method, (chain === 'tezos' ? 'KW-XTZ-' : 'KW-ETH-') + proof.payment_ref);
+  } catch (e) {
+    showToast(e.message || 'Could not confirm crypto order');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Confirm manual payment'; }
+  }
 }
 
 // Paystack is initialized server-side so the gateway amount cannot be tampered with in the browser.
@@ -3222,6 +3242,60 @@ document.getElementById('paystackPayBtn').addEventListener('click', async ()=>{
 document.getElementById('cryptoConfirmBtn').addEventListener('click', () => {
   submitManualCrypto('eth');
 });
+
+// ── PENDING-FIRST ORDER HELPERS ───────────────────────────────────────────────
+// Create a pending order on the server BEFORE payment. Returns { order_ref, ... }.
+async function createPendingOrder(customer, method, checkoutQuote) {
+  return postShopJson('/api/shop/order-create', checkoutPayload(customer, method, {
+    checkout_quote: checkoutQuote,
+  }));
+}
+
+// Confirm payment against an existing pending order by its order_ref. Retries
+// while the chain is still indexing (server returns 409 "not confirmed yet").
+async function confirmPendingOrder(orderRef, opts) {
+  const payload = Object.assign({ order_ref: orderRef }, opts);
+  const maxAttempts = 6;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetch('/api/shop/order-confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      // diagnostic capture
+      window.__shopDiag = window.__shopDiag || [];
+      window.__shopDiag.unshift({ t: new Date().toLocaleTimeString(), url: '/api/shop/order-confirm', status: res.status, body: JSON.stringify(data) });
+      if (window.__shopDiag.length > 8) window.__shopDiag.length = 8;
+      if (window.__renderShopDiag) window.__renderShopDiag();
+      if (res.ok) return data;
+      if (res.status === 409 && /confirm|not confirmed|waiting|found/i.test(data.error || '') && attempt < maxAttempts) {
+        lastErr = new Error(data.error || 'Awaiting on-chain confirmation');
+        await new Promise(r => setTimeout(r, 5000));
+        continue;
+      }
+      throw new Error(data.error || 'Order confirmation failed');
+    } catch (e) {
+      lastErr = e;
+      if (attempt < maxAttempts) { await new Promise(r => setTimeout(r, 5000)); continue; }
+      throw e;
+    }
+  }
+  if (lastErr) throw lastErr;
+}
+
+// Local safety net: remember an unconfirmed order so a returning customer (or
+// you) can still confirm it even after a browser refresh. Stored in memory +
+// a window global (no localStorage — artifacts/CSP-safe and session-scoped).
+window.__pendingOrders = window.__pendingOrders || {};
+function rememberPendingOrder(orderRef, meta) {
+  window.__pendingOrders[orderRef] = Object.assign({ ref: orderRef, t: Date.now() }, meta || {});
+}
+function clearPendingOrder(orderRef) {
+  if (window.__pendingOrders) delete window.__pendingOrders[orderRef];
+}
 
 // Notify via site-form API (reuse existing backend)
 async function notifyOrder(customer, ref, method, checkoutQuote = null) {
@@ -4204,21 +4278,33 @@ document.getElementById('ethSendBtn').addEventListener('click', async () => {
     const quoteData = await getServerCheckoutQuote(d, 'eth', { payer_address: _ethConnectedAddr });
     const ethAmt = quoteData.quote?.crypto_amount;
     if (!ethAmt) { showToast('ETH quote unavailable \u2014 try again in a moment'); return; }
+
+    // 1. Create the pending order before sending.
+    const pending = await createPendingOrder(d, 'eth', quoteData.quote);
+    const orderRef = pending.order_ref;
+    rememberPendingOrder(orderRef, { method: 'eth', payer_address: _ethConnectedAddr });
+
     const signer = _ethProvider.getSigner();
     const tx = await signer.sendTransaction({
       to:    toAddr,
       value: ethers.utils.parseEther(String(ethAmt)),
     });
-    // payment_ref MUST be the raw 0x tx hash — the server verifies it against a
-    // strict regex. The KW-ETH- prefix is for display only.
-    await notifyOrder(d, tx.hash, 'eth', quoteData.quote);
+
+    // 2. Confirm against the pending order (raw 0x tx hash for verification).
+    await confirmPendingOrder(orderRef, {
+      payment_method: 'eth',
+      payment_ref: tx.hash,
+      payer_address: _ethConnectedAddr,
+      checkout_quote: quoteData.quote,
+    });
+    clearPendingOrder(orderRef);
     showConfirmation('eth', 'KW-ETH-' + tx.hash);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/rejected|denied|cancel|user denied/i.test(msg)) {
       showToast('Transaction cancelled');
     } else {
-      showToast('Transaction failed \u2014 check wallet and try again');
+      showToast('Transaction sent \u2014 confirming. If this doesn\u2019t complete, use “confirm manually” with your transaction hash.');
       console.error('[ETH] send error:', e);
     }
   } finally {
@@ -4245,6 +4331,12 @@ async function sendErc20(token) {
     const quoteData = await getServerCheckoutQuote(d, token, { payer_address: _ethConnectedAddr });
     const usd = Number(quoteData.quote?.crypto_amount);
     if (!usd) { showToast(label + ' quote unavailable'); return; }
+
+    // 1. Create the pending order before sending.
+    const pending = await createPendingOrder(d, token, quoteData.quote);
+    const orderRef = pending.order_ref;
+    rememberPendingOrder(orderRef, { method: token, payer_address: _ethConnectedAddr });
+
     const signer       = _ethProvider.getSigner();
     const contractAddr = ERC20_CONTRACTS[token];
     const contract     = new ethers.Contract(contractAddr, ERC20_ABI, signer);
@@ -4254,15 +4346,22 @@ async function sendErc20(token) {
     const amount   = ethers.utils.parseUnits(usd.toFixed(2), decimals);
 
     const tx  = await contract.transfer(toAddr, amount);
-    // payment_ref MUST be the raw 0x tx hash for server verification.
-    await notifyOrder(d, tx.hash, token, quoteData.quote);
+
+    // 2. Confirm against the pending order (raw 0x tx hash for verification).
+    await confirmPendingOrder(orderRef, {
+      payment_method: token,
+      payment_ref: tx.hash,
+      payer_address: _ethConnectedAddr,
+      checkout_quote: quoteData.quote,
+    });
+    clearPendingOrder(orderRef);
     showConfirmation(token, 'KW-' + label + '-' + tx.hash);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/rejected|denied|cancel|user denied/i.test(msg)) {
       showToast('Transaction cancelled');
     } else {
-      showToast('Transaction failed — check wallet and try again');
+      showToast('Transaction sent \u2014 confirming. If this doesn\u2019t complete, use “confirm manually” with your transaction hash.');
       console.error('[ETH ' + label + '] send error:', e);
     }
   } finally {
@@ -4696,6 +4795,14 @@ document.getElementById('tezosSendBtn').addEventListener('click', async () => {
     const quoteData = await getServerCheckoutQuote(d, 'tezos', { payer_address: _tezosConnectedAddr });
     const xtzAmt = quoteData.quote?.crypto_amount;
     if (!xtzAmt) { showToast('XTZ quote unavailable — try again in a moment'); return; }
+
+    // 1. Create the pending order BEFORE sending. order_ref is the durable handle
+    //    so the order survives even if anything fails after the wallet send.
+    const pending = await createPendingOrder(d, 'tezos', quoteData.quote);
+    const orderRef = pending.order_ref;
+    // Stash locally so a returning/interrupted customer can still confirm.
+    rememberPendingOrder(orderRef, { method: 'tezos', payer_address: _tezosConnectedAddr });
+
     const mutez = String(Math.round(parseFloat(xtzAmt) * 1_000_000));
     const opHash = await _tezosWalletProvider.sendOperations([{
       kind: 'transaction',
@@ -4703,16 +4810,22 @@ document.getElementById('tezosSendBtn').addEventListener('click', async () => {
       destination: toAddr,
     }]);
     if (!opHash) throw new Error('Wallet did not return an operation hash');
-    // payment_ref MUST be the raw op hash — the server verifies it against a
-    // strict Tezos hash regex. The KW-XTZ- prefix is for display only.
-    await notifyOrder(d, opHash, 'tezos', quoteData.quote);
+
+    // 2. Confirm payment against the pending order (raw op hash for verification).
+    await confirmPendingOrder(orderRef, {
+      payment_method: 'tezos',
+      payment_ref: opHash,
+      payer_address: _tezosConnectedAddr,
+      checkout_quote: quoteData.quote,
+    });
+    clearPendingOrder(orderRef);
     showConfirmation('tezos', 'KW-XTZ-' + opHash);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/reject|cancel|denied|aborted/i.test(msg)) {
       showToast('Transaction cancelled');
     } else {
-      showToast('Transaction failed — check wallet and try again');
+      showToast('Transaction sent — confirming. If this doesn\u2019t complete, use “confirm manually” with your transaction hash.');
       console.error('[Tezos] send error:', e);
     }
   } finally {
