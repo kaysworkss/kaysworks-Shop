@@ -2702,6 +2702,16 @@ function updateCartUI() {
       updateCartUI();
     });
   });
+
+  // Keep the displayed crypto amount in sync with the order. The cached rate
+  // recomputes instantly against the new total, so the figure tracks the cart
+  // immediately instead of lagging until the next rate fetch.
+  try {
+    const ethPanel = document.getElementById('panel-eth');
+    if (ethPanel && ethPanel.classList.contains('active') && typeof renderEthPanel === 'function') renderEthPanel();
+    const xtzPanel = document.getElementById('panel-tezos');
+    if (xtzPanel && xtzPanel.classList.contains('active') && typeof renderTezosPanel === 'function') renderTezosPanel();
+  } catch (e) { /* panels not present yet — ignore */ }
 }
 
 function openCart() {
@@ -3095,12 +3105,28 @@ function checkoutPayload(customer, method, extra = {}) {
 }
 
 async function postShopJson(url, payload) {
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = await res.json().catch(() => ({}));
+  if (window.__shopLoadStart) window.__shopLoadStart();
+  // ── DIAGNOSTIC CAPTURE (remove with the diagnostic panel once stable) ──
+  window.__shopDiag = window.__shopDiag || [];
+  let res, data;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (netErr) {
+    window.__shopDiag.unshift({ t: new Date().toLocaleTimeString(), url, status: 'NETWORK ERROR', body: netErr.message });
+    if (window.__renderShopDiag) window.__renderShopDiag();
+    if (window.__shopLoadDone) window.__shopLoadDone();
+    throw new Error(`${url} — network error: ${netErr.message}`);
+  }
+  data = await res.json().catch(() => ({}));
+  window.__shopDiag.unshift({ t: new Date().toLocaleTimeString(), url, status: res.status, body: JSON.stringify(data) });
+  if (window.__shopDiag.length > 8) window.__shopDiag.length = 8;
+  if (window.__renderShopDiag) window.__renderShopDiag();
+  // ── END DIAGNOSTIC CAPTURE ──
+  if (window.__shopLoadDone) window.__shopLoadDone();
   if (!res.ok) throw new Error(data.error || `${url} failed`);
   return data;
 }
@@ -4937,5 +4963,76 @@ loadShopData()
   .catch(maybeOpenCheckoutFromHash);
 finalizeReturnedGatewayCheckout();
 </script>
+<!-- ════════ SHOP LOADING BAR ════════ -->
+<div id="shopLoadBar" style="position:fixed;top:0;left:0;height:3px;width:0;z-index:100001;background:linear-gradient(90deg,#c4845a,#c9993a);box-shadow:0 0 8px rgba(201,153,58,0.6);opacity:0;transition:width 0.25s ease,opacity 0.3s ease;pointer-events:none;"></div>
+<script>
+(function(){
+  var bar=document.getElementById('shopLoadBar');
+  var timer=null, active=0, pct=0;
+  window.__shopLoadStart=function(){
+    active++;
+    if(active>1) return;            // already running for a concurrent call
+    pct=8; bar.style.opacity='1'; bar.style.width=pct+'%';
+    clearInterval(timer);
+    timer=setInterval(function(){
+      // ease toward 90% and hold — never completes until the fetch returns
+      pct += Math.max(0.5,(90-pct)*0.08);
+      if(pct>90) pct=90;
+      bar.style.width=pct+'%';
+    },200);
+  };
+  window.__shopLoadDone=function(){
+    active=Math.max(0,active-1);
+    if(active>0) return;            // other calls still in flight
+    clearInterval(timer);
+    bar.style.width='100%';
+    setTimeout(function(){
+      bar.style.opacity='0';
+      setTimeout(function(){ bar.style.width='0'; },300);
+    },200);
+  };
+})();
+</script>
+<!-- ════════ END SHOP LOADING BAR ════════ -->
+
+<!-- ════════ DIAGNOSTIC PANEL — TEMPORARY, remove this whole block once stable ════════ -->
+<div id="shopDiag" style="position:fixed;left:0;right:0;bottom:0;z-index:99999;font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:1.4;color:#e8d5b0;background:rgba(30,21,16,0.97);border-top:2px solid #c4845a;max-height:45vh;overflow:auto;display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#9e4f2e;color:#fff;position:sticky;top:0;">
+    <strong>SHOP DIAGNOSTIC</strong>
+    <span>
+      <button id="shopDiagCopy" style="margin-right:6px;font-size:11px;padding:3px 8px;background:#e8d5b0;color:#3a2418;border:none;border-radius:3px;">Copy</button>
+      <button id="shopDiagClose" style="font-size:11px;padding:3px 8px;background:#3a2418;color:#e8d5b0;border:none;border-radius:3px;">Hide</button>
+    </span>
+  </div>
+  <div id="shopDiagBody" style="padding:8px 10px;white-space:pre-wrap;word-break:break-word;">No requests yet. Attempt a payment, then read the latest entry at the top.</div>
+</div>
+<button id="shopDiagToggle" style="position:fixed;right:8px;bottom:8px;z-index:100000;font-family:ui-monospace,monospace;font-size:11px;padding:6px 10px;background:#9e4f2e;color:#fff;border:none;border-radius:14px;opacity:0.85;">DIAG</button>
+<script>
+(function(){
+  function render(){
+    var body=document.getElementById('shopDiagBody');
+    if(!body) return;
+    var list=window.__shopDiag||[];
+    if(!list.length){ body.textContent='No requests yet. Attempt a payment, then read the latest entry at the top.'; return; }
+    body.textContent=list.map(function(e){
+      return '['+e.t+']  '+e.url+'\n  status: '+e.status+'\n  '+e.body;
+    }).join('\n\n──────────\n\n');
+  }
+  window.__renderShopDiag=render;
+  var panel=document.getElementById('shopDiag');
+  document.getElementById('shopDiagToggle').onclick=function(){
+    panel.style.display = panel.style.display==='none' ? 'block':'none';
+    render();
+  };
+  document.getElementById('shopDiagClose').onclick=function(){ panel.style.display='none'; };
+  document.getElementById('shopDiagCopy').onclick=function(){
+    var txt=(window.__shopDiag||[]).map(function(e){return '['+e.t+'] '+e.url+' status:'+e.status+' '+e.body;}).join('\n');
+    navigator.clipboard && navigator.clipboard.writeText(txt);
+    this.textContent='Copied'; var b=this; setTimeout(function(){b.textContent='Copy';},1200);
+  };
+  render();
+})();
+</script>
+<!-- ════════ END DIAGNOSTIC PANEL ════════ -->
 </body>
 </html>
