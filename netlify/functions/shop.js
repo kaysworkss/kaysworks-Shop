@@ -663,7 +663,197 @@ async function releaseVariantStock(supabase, item) {
   }
 }
 
-// ── ORDER ─────────────────────────────────────────────────────────────────────
+// ── ORDER REFERENCE ───────────────────────────────────────────────────────────
+function makeOrderRef() {
+  return 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+}
+
+// ── PENDING-FIRST FLOW ────────────────────────────────────────────────────────
+// Step 1: create a pending order BEFORE payment. Records items, totals, customer,
+// and a generated order_ref. No stock touched, no payment verified yet. The
+// returned order_ref is the durable handle — payment can be confirmed later even
+// if the customer's cart is gone.
+async function handleShopOrderCreate(ctx, supabase) {
+  if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
+  const body = ctx.body || {};
+  let checkout;
+  try {
+    checkout = await computeShopCheckout(body, supabase);
+  } catch (e) {
+    return jsonError(e);
+  }
+
+  const paymentMethod = String(body.payment_method || '').slice(0, 40);
+  const quoteRequired = ['paystack','flutterwave','eth','tezos','usdc','usdt'].includes(paymentMethod);
+  // Verify the signed quote so a pending order can't be created with tampered totals.
+  if (quoteRequired && !verifyShopQuote(body.checkout_quote, checkout, { payment_method: paymentMethod })) {
+    return json(400, { error: 'Invalid or expired server checkout quote' });
+  }
+
+  const orderRef = makeOrderRef();
+  const { data: order, error: orderError } = await supabase
+    .from('shop_orders')
+    .insert({
+      order_ref:       orderRef,
+      customer_name:   String(body.name    || '').slice(0, 200),
+      email:           String(body.email   || '').slice(0, 320),
+      phone:           String(body.phone   || '').slice(0, 60),
+      address:         String(body.address || '').slice(0, 500),
+      items:           checkout.trustedItems,
+      total_ngn:       checkout.totalNgn,
+      total_usd:       checkout.totalUsd,
+      delivery_fee_ngn: checkout.deliveryNgn,
+      delivery_method:  checkout.method.slice(0, 40),
+      delivery_zone:    checkout.zone.slice(0, 40),
+      payment_method:  paymentMethod,
+      status: 'pending',
+    })
+    .select('id, order_ref')
+    .single();
+  if (orderError) return json(500, { error: orderError.message });
+
+  return json(200, {
+    ok: true,
+    order_ref: order.order_ref,
+    order_id: order.id,
+    total_ngn: checkout.totalNgn,
+    total_usd: checkout.totalUsd,
+  });
+}
+
+// Step 2: confirm payment for an existing pending order. Looks the order up by
+// order_ref (NOT the cart — so this works even if the browser cart is gone),
+// re-derives a checkout from the SAVED items, verifies the payment on-chain or
+// via the card gateway, decrements stock, and flips the order to 'paid'.
+async function handleShopOrderConfirm(ctx, supabase) {
+  if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
+  const body = ctx.body || {};
+  const orderRef = String(body.order_ref || '').slice(0, 80);
+  if (!orderRef) return json(400, { error: 'order_ref is required' });
+
+  // Load the pending order — this is the source of truth for what was bought.
+  const { data: order, error: loadErr } = await supabase
+    .from('shop_orders')
+    .select('*')
+    .eq('order_ref', orderRef)
+    .maybeSingle();
+  if (loadErr && loadErr.code !== 'PGRST116') return json(500, { error: loadErr.message });
+  if (!order) return json(404, { error: 'Order not found for that reference' });
+  if (order.status === 'paid') {
+    return json(200, { ok: true, already_paid: true, order_id: order.id, order_ref: orderRef });
+  }
+
+  const paymentMethod = String(body.payment_method || order.payment_method || '').slice(0, 40);
+  const paymentRef = String(body.payment_ref || '').slice(0, 200);
+  const payerAddress = String(body.payer_address || '').slice(0, 120);
+  const isCryptoPayment = ['eth','tezos','usdc','usdt'].includes(paymentMethod);
+  const isCardPayment = ['paystack','flutterwave'].includes(paymentMethod);
+
+  if ((isCryptoPayment || isCardPayment) && !paymentRef) {
+    return json(400, { error: 'Payment reference / transaction hash is required' });
+  }
+
+  // Guard against the same payment_ref being used for a different order.
+  if (paymentRef) {
+    const { data: dupe } = await supabase
+      .from('shop_orders')
+      .select('id, order_ref, status')
+      .eq('payment_ref', paymentRef)
+      .maybeSingle();
+    if (dupe && dupe.order_ref !== orderRef) {
+      return json(409, { error: 'This payment has already been recorded for another order' });
+    }
+  }
+
+  // Reconstruct the trusted checkout from the SAVED order items so verification
+  // uses authoritative server data, not anything the client re-sends now.
+  const savedItems = Array.isArray(order.items) ? order.items : [];
+  const checkout = {
+    trustedItems: savedItems,
+    totalNgn: Number(order.total_ngn) || 0,
+    totalUsd: Number(order.total_usd) || 0,
+    deliveryNgn: Number(order.delivery_fee_ngn) || 0,
+    method: order.delivery_method || 'pickup',
+    zone: order.delivery_zone || 'pickup',
+  };
+
+  // Verify payment BEFORE touching stock.
+  let chainVerification = null, cardVerification = null;
+  if (isCryptoPayment) {
+    if (!payerAddress) return json(400, { error: 'Sending wallet address is required' });
+    try {
+      chainVerification = await verifyCryptoPaymentOnChain({
+        paymentMethod,
+        paymentRef,
+        payerAddress,
+        quote: body.checkout_quote || { crypto_amount: body.crypto_amount },
+        supabase,
+      });
+    } catch (e) {
+      return jsonError(e);
+    }
+  } else if (isCardPayment) {
+    try {
+      cardVerification = await verifyCardPayment({
+        provider: paymentMethod,
+        reference: paymentRef,
+        expectedTotalNgn: checkout.totalNgn,
+      });
+    } catch (e) {
+      return jsonError(e);
+    }
+  }
+
+  // Decrement stock now that payment is confirmed.
+  const claimed = [];
+  for (const item of checkout.trustedItems) {
+    let result;
+    try {
+      result = await claimVariantStock(supabase, item);
+    } catch (e) {
+      for (const c of claimed) await releaseVariantStock(supabase, c);
+      return jsonError(e);
+    }
+    if (!result.ok) {
+      for (const c of claimed) await releaseVariantStock(supabase, c);
+      return json(409, {
+        error: `Sold out: ${item.name} · ${item.variant} is no longer available`,
+        product_id: item.id,
+        variant: item.variant,
+        sold_out: true,
+      });
+    }
+    claimed.push(item);
+  }
+
+  // Flip the order to paid.
+  const { error: updErr } = await supabase
+    .from('shop_orders')
+    .update({
+      status: 'paid',
+      payment_method: paymentMethod,
+      payment_ref: paymentRef,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('order_ref', orderRef);
+  if (updErr) {
+    for (const c of claimed) await releaseVariantStock(supabase, c);
+    return json(500, { error: updErr.message });
+  }
+
+  return json(200, {
+    ok: true,
+    order_id: order.id,
+    order_ref: orderRef,
+    total_ngn: checkout.totalNgn,
+    total_usd: checkout.totalUsd,
+    delivery_fee_ngn: checkout.deliveryNgn,
+    chain_verification: chainVerification,
+    card_verification: cardVerification,
+  });
+}
+
+// ── ORDER (legacy single-shot — kept for backward compatibility) ──────────────
 async function handleShopOrder(ctx, supabase) {
   if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
   const body = ctx.body || {};
@@ -820,11 +1010,13 @@ exports.handler = async (event) => {
 
   try {
     switch (action) {
-      case 'shop-products':     return await handleShopProducts(ctx, supabase);
-      case 'shop-config':       return await handleShopConfig(ctx, supabase);
-      case 'shop-quote':        return await handleShopQuote(ctx, supabase);
-      case 'shop-payment-init': return await handleShopPaymentInit(ctx, supabase);
-      case 'shop-order':        return await handleShopOrder(ctx, supabase);
+      case 'shop-products':       return await handleShopProducts(ctx, supabase);
+      case 'shop-config':         return await handleShopConfig(ctx, supabase);
+      case 'shop-quote':          return await handleShopQuote(ctx, supabase);
+      case 'shop-payment-init':   return await handleShopPaymentInit(ctx, supabase);
+      case 'shop-order-create':   return await handleShopOrderCreate(ctx, supabase);
+      case 'shop-order-confirm':  return await handleShopOrderConfirm(ctx, supabase);
+      case 'shop-order':          return await handleShopOrder(ctx, supabase);
       default:
         return json(404, { error: `Unknown shop action: ${action}` });
     }
