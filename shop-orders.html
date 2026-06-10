@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Shop Orders · Kay's Works Admin</title>
+<title>Shop Orders Â· Kay's Works Admin</title>
 <link rel="icon" type="image/svg+xml" href="/images/kaysworkslogo.svg"/>
 <meta name="robots" content="noindex,nofollow"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -130,6 +130,7 @@ nav{
   padding:0.28rem 0.7rem;border-radius:20px;white-space:nowrap;display:inline-block;
 }
 .status-pending    {background:rgba(201,153,58,0.15);color:var(--amber);}
+.status-paid       {background:rgba(90,192,245,0.15);color:var(--blue);}
 .status-processing {background:rgba(74,96,128,0.15);color:var(--blue);}
 .status-shipped    {background:rgba(107,124,92,0.18);color:var(--moss);}
 .status-fulfilled  {background:rgba(107,124,92,0.25);color:var(--moss);font-weight:600;}
@@ -291,7 +292,7 @@ body.dark .toast{background:#2a1c14;}
 <body>
 
 <nav>
-  <span class="nav-logo"><span style="font-weight:600">KAY'S</span>&nbsp;<span style="font-weight:500">WORKS</span> · Orders</span>
+  <span class="nav-logo"><span style="font-weight:600">KAY'S</span>&nbsp;<span style="font-weight:500">WORKS</span> Â· Orders</span>
   <div class="nav-right">
     <a href="/shop">Shop</a>
     <a href="/claim-admin">Claim Admin</a>
@@ -319,18 +320,20 @@ body.dark .toast{background:#2a1c14;}
     <!-- Stats -->
     <div class="stats-row" id="statsRow">
       <div class="stat-card"><div class="stat-label">Total orders</div><div class="stat-value" id="statTotal">?</div></div>
-      <div class="stat-card alert" id="statPendingCard"><div class="stat-label">Pending</div><div class="stat-value" id="statPending">?</div></div>
-      <div class="stat-card"><div class="stat-label">Shipped</div><div class="stat-value" id="statShipped">?</div></div>
+      <div class="stat-card alert" id="statPendingCard"><div class="stat-label">Pending payment</div><div class="stat-value" id="statPending">?</div><div class="stat-sub">abandoned / unpaid</div></div>
+      <div class="stat-card alert" id="statPaidShipCard"><div class="stat-label">Paid, not shipped</div><div class="stat-value" id="statPaidShip">?</div><div class="stat-sub">needs fulfilment</div></div>
       <div class="stat-card good"><div class="stat-label">Fulfilled</div><div class="stat-value" id="statFulfilled">?</div></div>
       <div class="stat-card"><div class="stat-label">Revenue (NGN)</div><div class="stat-value" id="statRevenue">?</div><div class="stat-sub" id="statRevenueUsd"></div></div>
-      <div class="stat-card alert" id="statLowStockCard"><div class="stat-label">Low stock</div><div class="stat-value" id="statLowStock">—</div><div class="stat-sub">variants ≤ 3</div></div>
+      <div class="stat-card alert" id="statLowStockCard"><div class="stat-label">Low stock</div><div class="stat-value" id="statLowStock">â€”</div><div class="stat-sub">variants â‰¤ 3</div></div>
     </div>
 
     <!-- Orders -->
     <div class="toolbar">
       <span class="toolbar-title">Orders</span>
       <button class="filter-pill active" data-status="all">All</button>
-      <button class="filter-pill" data-status="pending">Pending</button>
+      <button class="filter-pill" data-status="pending_payment">Pending payment</button>
+      <button class="filter-pill" data-status="paid_unshipped">Paid not shipped</button>
+      <button class="filter-pill" data-status="paid">Paid</button>
       <button class="filter-pill" data-status="processing">Processing</button>
       <button class="filter-pill" data-status="shipped">Shipped</button>
       <button class="filter-pill" data-status="fulfilled">Fulfilled</button>
@@ -354,7 +357,7 @@ body.dark .toast{background:#2a1c14;}
           </tr>
         </thead>
         <tbody id="ordersBody">
-          <tr><td colspan="9" class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">No orders yet.</div></td></tr>
+          <tr><td colspan="9" class="empty-state"><div class="empty-icon">âŠ˜</div><div class="empty-text">No orders yet.</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -366,7 +369,7 @@ body.dark .toast{background:#2a1c14;}
         <button class="refresh-btn" id="refreshStockBtn">? Refresh</button>
       </div>
       <div class="stock-grid" id="stockGrid">
-        <div class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">Loading products?</div></div>
+        <div class="empty-state"><div class="empty-icon">âŠ˜</div><div class="empty-text">Loading products?</div></div>
       </div>
     </div>
 
@@ -423,23 +426,23 @@ let _products = [];
 let _activeFilter = 'all';
 
 /* --- Helpers --- */
-function fmt(n)    { return '₦' + Number(n||0).toLocaleString('en-NG'); }
+function fmt(n)    { return 'â‚¦' + Number(n||0).toLocaleString('en-NG'); }
 function fmtUsd(n) { return '$' + Number(n||0).toFixed(0); }
 function formatDate(d) {
-  if (!d) return '—';
+  if (!d) return 'â€”';
   return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
 }
 function formatTime(d) {
   if (!d) return '';
   return new Date(d).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 }
-function short(str, n=30) { return String(str||'').length > n ? str.slice(0,n)+'⬦' : str; }
+function short(str, n=30) { return String(str||'').length > n ? str.slice(0,n)+'â¬¦' : str; }
 
 /* --- Auth --- */
 document.getElementById('loginBtn').addEventListener('click', async () => {
   const pw = document.getElementById('pwInput').value;
   const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Checking…';
+  btn.disabled = true; btn.textContent = 'Checkingâ€¦';
   try {
     const res = await fetch('/api/admin/login', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -482,6 +485,7 @@ async function loadOrders() {
 function renderStats() {
   const all       = _orders;
   const pending   = all.filter(o => o.status==='pending').length;
+  const paidShip  = all.filter(o => ['paid','processing'].includes(o.status)).length;
   const shipped   = all.filter(o => o.status==='shipped').length;
   const fulfilled = all.filter(o => o.status==='fulfilled').length;
   const revenueNgn = all.filter(o=>o.status!=='cancelled').reduce((a,o)=>a+(o.total_ngn||0),0);
@@ -489,11 +493,12 @@ function renderStats() {
 
   document.getElementById('statTotal').textContent     = all.length;
   document.getElementById('statPending').textContent   = pending;
-  document.getElementById('statShipped').textContent   = shipped;
+  document.getElementById('statPaidShip').textContent  = paidShip;
   document.getElementById('statFulfilled').textContent = fulfilled;
-  document.getElementById('statRevenue').textContent   = '₦' + Math.round(revenueNgn/1000) + 'k';
+  document.getElementById('statRevenue').textContent   = 'â‚¦' + Math.round(revenueNgn/1000) + 'k';
   document.getElementById('statRevenueUsd').textContent= fmtUsd(revenueUsd) + ' USD';
   document.getElementById('statPendingCard').className = `stat-card ${pending>0?'alert':'good'}`;
+  document.getElementById('statPaidShipCard').className = `stat-card ${paidShip>0?'alert':'good'}`;
 
   // Low stock from products
   let lowStockCount = 0;
@@ -510,17 +515,17 @@ function renderStats() {
 function renderOrders() {
   const tbody = document.getElementById('ordersBody');
   if (!_orders.length) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">No orders${_activeFilter!=='all'?' with this status':''}.</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">âŠ˜</div><div class="empty-text">No orders${_activeFilter!=='all'?' with this status':''}.</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML = _orders.map(o => {
     const items = Array.isArray(o.items) ? o.items : [];
-    const itemsSummary = items.slice(0,2).map(i=>`${short(i.name,20)} · ${i.variant}`).join('<br/>');
+    const itemsSummary = items.slice(0,2).map(i=>`${short(i.name,20)} Â· ${i.variant}`).join('<br/>');
     const moreItems = items.length > 2 ? `<span style="color:var(--text-muted);font-size:0.78rem">+${items.length-2} more</span>` : '';
     return `<tr>
-      <td><div class="order-ref">${short(o.payment_ref||o.id,18)}</div></td>
+      <td><div class="order-ref">${short(orderRef(o),18)}</div><div style="font-size:0.68rem;color:var(--text-muted);margin-top:0.2rem">${o.status==='pending' ? orderAgeLabel(o) : ''}</div></td>
       <td>
-        <div class="order-customer">${o.customer_name||'—'}</div>
+        <div class="order-customer">${o.customer_name||'â€”'}</div>
         <div class="order-email">${o.email||''}</div>
       </td>
       <td><div class="order-items-list">${itemsSummary}${moreItems}</div></td>
@@ -528,14 +533,15 @@ function renderOrders() {
         <div class="order-total">${fmt(o.total_ngn)}</div>
         <div class="order-total-usd">${fmtUsd(o.total_usd)}</div>
       </td>
-      <td><span class="pay-badge">${(o.payment_method||'—').toUpperCase()}</span></td>
-      <td style="font-size:0.82rem;color:var(--text-muted)">${o.delivery_method==='pickup'?'Pickup · Kaduna':(o.delivery_zone||'—')}</td>
+      <td><span class="pay-badge">${(o.payment_method||'â€”').toUpperCase()}</span></td>
+      <td style="font-size:0.82rem;color:var(--text-muted)">${o.delivery_method==='pickup'?'Pickup Â· Kaduna':(o.delivery_zone||'â€”')}</td>
       <td><span class="status-badge status-${o.status||'pending'}">${o.status||'pending'}</span></td>
       <td style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap">
         ${formatDate(o.created_at)}<br/>${formatTime(o.created_at)}
       </td>
       <td>
         <button class="action-btn" onclick="openDetail('${o.id}')">View</button>
+        <button class="action-btn" style="margin-left:0.35rem;color:var(--rust);border-color:rgba(158,79,46,0.35)" onclick="deleteOrder('${o.id}', event)">Delete</button>
       </td>
     </tr>`;
   }).join('');
@@ -556,8 +562,9 @@ document.getElementById('refreshBtn').addEventListener('click', loadOrders);
 function openDetail(id) {
   const o = _orders.find(x => x.id === id);
   if (!o) return;
-  document.getElementById('detailRef').textContent = o.payment_ref || o.id;
+  document.getElementById('detailRef').textContent = orderRef(o);
   const items = Array.isArray(o.items) ? o.items : [];
+  const meta = paymentMeta(o);
 
   document.getElementById('detailBody').innerHTML = `
     <div class="detail-section">
@@ -566,7 +573,7 @@ function openDetail(id) {
         <div>
           <label class="detail-form-label">Order status</label>
           <select class="detail-select" id="dStatus">
-            ${['pending','processing','shipped','fulfilled','cancelled'].map(s=>
+            ${['pending','paid','processing','shipped','fulfilled','cancelled'].map(s=>
               `<option value="${s}"${o.status===s?' selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`
             ).join('')}
           </select>
@@ -574,8 +581,8 @@ function openDetail(id) {
         <div>
           <label class="detail-form-label">Carrier</label>
           <select class="detail-select" id="dCarrier">
-            ${['—','GIG Logistics','UPS','DHL','FedEx','Other'].map(c=>
-              `<option value="${c}"${(o.tracking_carrier||'—')===c?' selected':''}>${c}</option>`
+            ${['â€”','GIG Logistics','UPS','DHL','FedEx','Other'].map(c=>
+              `<option value="${c}"${(o.tracking_carrier||'â€”')===c?' selected':''}>${c}</option>`
             ).join('')}
           </select>
         </div>
@@ -593,11 +600,11 @@ function openDetail(id) {
 
     <div class="detail-section">
       <div class="detail-section-label">Customer</div>
-      <div class="detail-row"><span class="detail-row-label">Name</span><span class="detail-row-val">${o.customer_name||'—'}</span></div>
-      <div class="detail-row"><span class="detail-row-label">Email</span><span class="detail-row-val"><a href="mailto:${o.email}" style="color:var(--clay)">${o.email||'—'}</a></span></div>
-      <div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-val">${o.phone||'—'}</span></div>
-      <div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-val">${o.address||'—'}</span></div>
-      <div class="detail-row"><span class="detail-row-label">Delivery</span><span class="detail-row-val">${o.delivery_method==='pickup'?'Pickup · Kaduna':(o.delivery_zone||'—')}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Name</span><span class="detail-row-val">${o.customer_name||'â€”'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Email</span><span class="detail-row-val"><a href="mailto:${o.email}" style="color:var(--clay)">${o.email||'â€”'}</a></span></div>
+      <div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-val">${o.phone||'â€”'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-val">${o.address||'â€”'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Delivery</span><span class="detail-row-val">${o.delivery_method==='pickup'?'Pickup Â· Kaduna':(o.delivery_zone||'â€”')}</span></div>
     </div>
 
     <div class="detail-section">
@@ -607,7 +614,7 @@ function openDetail(id) {
           <div class="detail-item">
             <div>
               <div class="detail-item-name">${i.name}</div>
-              <div style="font-size:0.78rem;color:var(--text-muted)">${i.variant} × ${i.qty}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">${i.variant} Ã— ${i.qty}</div>
             </div>
             <div class="detail-item-price">${fmt((i.priceNgn||0)*i.qty)}</div>
           </div>`).join('')}
@@ -616,8 +623,8 @@ function openDetail(id) {
 
     <div class="detail-section">
       <div class="detail-section-label">Payment</div>
-      <div class="detail-row"><span class="detail-row-label">Method</span><span class="detail-row-val">${(o.payment_method||'—').toUpperCase()}</span></div>
-      <div class="detail-row"><span class="detail-row-label">Reference</span><span class="detail-row-val" style="font-family:'Montserrat',sans-serif;font-size:0.72rem;color:var(--clay)">${o.payment_ref||'—'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Method</span><span class="detail-row-val">${(o.payment_method||'â€”').toUpperCase()}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Reference</span><span class="detail-row-val" style="font-family:'Montserrat',sans-serif;font-size:0.72rem;color:var(--clay)">${o.payment_ref||'â€”'}</span></div>
       <div class="detail-row"><span class="detail-row-label">Subtotal</span><span class="detail-row-val">${fmt(o.total_ngn - (o.delivery_fee_ngn||0))}</span></div>
       <div class="detail-row"><span class="detail-row-label">Delivery fee</span><span class="detail-row-val">${o.delivery_fee_ngn ? fmt(o.delivery_fee_ngn) : 'Free'}</span></div>
       <div class="detail-row" style="font-weight:600"><span class="detail-row-label">Total</span><span class="detail-row-val" style="color:var(--text);font-family:'Cormorant Garamond',serif;font-size:1.1rem">${fmt(o.total_ngn)} / ${fmtUsd(o.total_usd)}</span></div>
@@ -626,6 +633,25 @@ function openDetail(id) {
     </div>`;
 
   document.getElementById('detailOverlay').classList.add('open');
+}
+
+async function deleteOrder(id, event) {
+  if (event) event.stopPropagation();
+  const o = _orders.find(x => x.id === id);
+  const label = o ? `${o.customer_name || 'this customer'} / ${orderRef(o)}` : 'this order';
+  const restock = ['paid','processing','shipped','fulfilled'].includes(o?.status || '');
+  const restockText = restock ? ' Stock for its items will be restored.' : '';
+  if (!confirm(`Delete ${label}? This is permanent and meant for test orders only.${restockText}`)) return;
+  try {
+    const res = await fetch(`/api/admin/shop-order/${id}${restock ? '?restock=1' : ''}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-token': _token },
+    });
+    if (!res.ok) { showToast('Delete failed'); return; }
+    showToast('Order deleted');
+    closeDetail();
+    loadOrders();
+  } catch(e) { showToast('Network error'); }
 }
 
 async function saveOrderDetail(id) {
@@ -640,12 +666,12 @@ async function saveOrderDetail(id) {
       body: JSON.stringify({
         status,
         tracking_number: tracking,
-        tracking_carrier: carrier === '—' ? '' : carrier,
+        tracking_carrier: carrier === 'â€”' ? '' : carrier,
         admin_note: note,
       }),
     });
     if (!res.ok) { showToast('Save failed'); return; }
-    showToast('Order updated ✓');
+    showToast('Order updated âœ“');
     closeDetail();
     loadOrders();
   } catch(e) { showToast('Network error'); }
@@ -680,13 +706,13 @@ function stockChoices(p) {
       const type = String(opt.type || opt.print_type || opt.name || opt.label || 'Print').trim();
       const sizes = (opt.sizes || opt.variants || []).map(String).filter(Boolean);
       const avail = (opt.available_sizes || opt.available || opt.available_variants || sizes).map(String).filter(Boolean);
-      return (avail.length ? avail : sizes).map(size => ({ key: printStockKey(type, size), label: `${type} · ${size}` }));
+      return (avail.length ? avail : sizes).map(size => ({ key: printStockKey(type, size), label: `${type} Â· ${size}` }));
     });
   }
 
   if (available && typeof available === 'object' && !Array.isArray(available)) {
     return Object.entries(available).flatMap(([type, sizes]) =>
-      (Array.isArray(sizes) ? sizes : []).map(size => ({ key: printStockKey(type, String(size)), label: `${type} · ${size}` }))
+      (Array.isArray(sizes) ? sizes : []).map(size => ({ key: printStockKey(type, String(size)), label: `${type} Â· ${size}` }))
     );
   }
 
@@ -697,7 +723,7 @@ function stockChoices(p) {
 function renderStock() {
   const grid = document.getElementById('stockGrid');
   if (!_products.length) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">No products found.</div></div>`;
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">âŠ˜</div><div class="empty-text">No products found.</div></div>`;
     return;
   }
 
@@ -724,7 +750,7 @@ function renderStock() {
 
     return `<div class="stock-card">
       <div class="stock-card-name">${p.name}</div>
-      <div class="stock-card-cat">${p.category}${p.print_type?' · '+p.print_type:''}</div>
+      <div class="stock-card-cat">${p.category}${p.print_type?' Â· '+p.print_type:''}</div>
       ${stockRows || '<div class="stock-variant-row"><span class="stock-variant-label">No variants</span></div>'}
     </div>`;
   }).join('');
@@ -751,7 +777,7 @@ async function saveVariantStock(pid, variant) {
     p.stock_by_variant = sbv;
     renderStock();
     renderStats();
-    showToast(`Stock updated · ${variant}: ${qty} ✓`);
+    showToast(`Stock updated Â· ${variant}: ${qty} âœ“`);
   } catch(e) { showToast('Network error'); }
 }
 
@@ -772,7 +798,7 @@ async function setVariantStock(pid, variant) {
     p.stock_by_variant = sbv;
     renderStock();
     renderStats();
-    showToast(`Stock set · ${variant}: ${qty} ✓`);
+    showToast(`Stock set Â· ${variant}: ${qty} âœ“`);
   } catch(e) { showToast('Network error'); }
 }
 
@@ -781,3 +807,5 @@ if (_token) showDashboard();
 </script>
 </body>
 </html>
+
+
