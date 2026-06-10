@@ -487,20 +487,47 @@ function showDashboard() {
   loadStock();
 }
 
+async function fetchAdmin(path, options = {}) {
+  const fallback = options.fallback;
+  const fetchOptions = { ...options };
+  delete fetchOptions.fallback;
+  const first = await fetch(path, fetchOptions);
+  if (first.ok || !fallback) return first;
+  return fetch(fallback, fetchOptions);
+}
+async function readError(res) {
+  try {
+    const data = await res.json();
+    return data?.error || data?.message || `HTTP ${res.status}`;
+  } catch (_) {
+    try { return (await res.text()).slice(0, 180) || `HTTP ${res.status}`; }
+    catch (_) { return `HTTP ${res.status}`; }
+  }
+}
 /* --- Load orders --- */
 async function loadOrders() {
   try {
-    const url = _activeFilter === 'all'
-      ? '/api/admin/shop-orders'
-      : `/api/admin/shop-orders?status=${_activeFilter}`;
-    const res = await fetch(url, { headers: { 'x-admin-token': _token } });
-    if (!res.ok) { showToast('Failed to load orders'); return; }
-    _orders = await res.json();
+    const statusPart = _activeFilter === 'all' ? '' : `?status=${encodeURIComponent(_activeFilter)}`;
+    const directStatus = _activeFilter === 'all' ? '' : `&status=${encodeURIComponent(_activeFilter)}`;
+    const res = await fetchAdmin(`/api/admin/shop-orders${statusPart}`, {
+      headers: { 'x-admin-token': _token },
+      fallback: `/.netlify/functions/shop-admin?action=shop-orders${directStatus}`,
+    });
+    if (!res.ok) {
+      const msg = await readError(res);
+      console.error('[shop-orders] load failed:', msg);
+      showToast(`Failed to load orders: ${msg}`, 6000);
+      return;
+    }
+    const rows = await res.json();
+    _orders = Array.isArray(rows) ? rows : [];
     renderOrders();
     renderStats();
-  } catch(e) { showToast('Network error'); }
+  } catch(e) {
+    console.error('[shop-orders] network error:', e);
+    showToast('Network error loading orders', 6000);
+  }
 }
-
 /* --- Stats --- */
 function renderStats() {
   const all       = _orders;
@@ -662,25 +689,29 @@ async function deleteOrder(id, event) {
   const restockText = restock ? ' Stock for its items will be restored.' : '';
   if (!confirm(`Delete ${label}? This is permanent and meant for test orders only.${restockText}`)) return;
   try {
-    const res = await fetch(`/api/admin/shop-order/${id}${restock ? '?restock=1' : ''}`, {
+    const res = await fetchAdmin(`/api/admin/shop-order/${id}${restock ? '?restock=1' : ''}`, {
       method: 'DELETE',
       headers: { 'x-admin-token': _token },
+      fallback: `/.netlify/functions/shop-admin?action=shop-order&id=${encodeURIComponent(id)}${restock ? '&restock=1' : ''}`,
     });
-    if (!res.ok) { showToast('Delete failed'); return; }
+    if (!res.ok) {
+      const msg = await readError(res);
+      showToast(`Delete failed: ${msg}`, 6000);
+      return;
+    }
     showToast('Order deleted');
     closeDetail();
     loadOrders();
     loadStock();
   } catch(e) { showToast('Network error'); }
 }
-
 async function saveOrderDetail(id) {
   const status   = document.getElementById('dStatus').value;
   const tracking = document.getElementById('dTracking').value.trim();
   const carrier  = document.getElementById('dCarrier').value;
   const note     = document.getElementById('dNote').value.trim();
   try {
-    const res = await fetch(`/api/admin/shop-order/${id}`, {
+    const res = await fetchAdmin(`/api/admin/shop-order/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type':'application/json', 'x-admin-token': _token },
       body: JSON.stringify({
@@ -689,6 +720,7 @@ async function saveOrderDetail(id) {
         tracking_carrier: carrier === '-' ? '' : carrier,
         admin_note: note,
       }),
+      fallback: `/.netlify/functions/shop-admin?action=shop-order&id=${encodeURIComponent(id)}`,
     });
     if (!res.ok) { showToast('Save failed'); return; }
     showToast('Order updated');
@@ -705,12 +737,20 @@ document.getElementById('detailOverlay').addEventListener('click', e => {
 /* --- Stock management --- */
 async function loadStock() {
   try {
-    const res = await fetch('/api/admin/shop-products', { headers: { 'x-admin-token': _token } });
-    if (!res.ok) return;
+    const res = await fetchAdmin('/api/admin/shop-products', {
+      headers: { 'x-admin-token': _token },
+      fallback: '/.netlify/functions/shop-admin?action=shop-products',
+    });
+    if (!res.ok) {
+      const msg = await readError(res);
+      console.error('[shop-orders] stock load failed:', msg);
+      showToast(`Failed to load stock: ${msg}`, 6000);
+      return;
+    }
     _products = await res.json();
     renderStock();
     renderStats();
-  } catch(e) {}
+  } catch(e) { console.error('[shop-orders] stock network error:', e); showToast('Network error loading stock', 6000); }
 }
 document.getElementById('refreshStockBtn').addEventListener('click', loadStock);
 

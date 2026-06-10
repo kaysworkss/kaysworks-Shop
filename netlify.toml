@@ -1,12 +1,12 @@
-#  netlify.toml — standalone shop (shop.kaysworks.com)
+# netlify.toml - standalone shop (shop.kaysworks.com)
 #  Native Netlify functions: shop.js (public) + shop-admin.js (admin)
-#  Àpótí Ọlọ́wẹ̀ · Kaysworks 2026
+# Apoti Olowe - Kaysworks 2026
 
 [build]
   publish = "."                      # static shop HTML at repo root
-  functions = "netlify/functions"
+  functions = "."
 
-# ── PUBLIC SHOP API → shop.js ─────────────────────────────────────────────────
+# PUBLIC SHOP API -> shop.js
 [[redirects]]
   from = "/api/shop/products"
   to   = "/.netlify/functions/shop?action=shop-products"
@@ -43,7 +43,7 @@
   status = 200
   force  = true
 
-# ── ADMIN SHOP API → shop-admin.js ────────────────────────────────────────────
+# ADMIN SHOP API -> shop-admin.js
 [[redirects]]
   from = "/api/admin/login"
   to   = "/.netlify/functions/shop-admin?action=login"
@@ -75,7 +75,7 @@
   status = 200
   force  = true
 
-# ── PRETTY PAGE ROUTES ────────────────────────────────────────────────────────
+# PRETTY PAGE ROUTES
 # If the shop is the root of this subdomain, you may want "/" → shop.html too.
 [[redirects]]
   from = "/"
@@ -99,7 +99,7 @@
   to   = "/:name.html"
   status = 200
 
-# ── HEADERS ───────────────────────────────────────────────────────────────────
+# HEADERS
 [[headers]]
   for = "/api/*"
   [headers.values]
