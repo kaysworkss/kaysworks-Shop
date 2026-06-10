@@ -37,13 +37,13 @@ function preflight() {
   return { statusCode: 204, headers: CORS_HEADERS, body: '' };
 }
 
-// Parse a Netlify event into { method, query, headers, body, path }
+// Parse a Netlify event into { method, query, headers, body }
 function parseEvent(event) {
   const method = event.httpMethod;
   const query = event.queryStringParameters || {};
-  // Netlify lower-cases header names already.
-  const headers = event.headers || {};
-  const path = event.path || '';
+  const headers = Object.fromEntries(
+    Object.entries(event.headers || {}).map(([key, value]) => [String(key).toLowerCase(), value])
+  );
 
   let body = {};
   if (event.body) {
@@ -57,7 +57,7 @@ function parseEvent(event) {
       try { body = JSON.parse(raw); } catch { body = raw; }
     }
   }
-  return { method, query, headers, body, path };
+  return { method, query, headers, body };
 }
 
 module.exports = { getSupabase, json, preflight, parseEvent };
