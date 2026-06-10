@@ -1,0 +1,104 @@
+#  netlify.toml — standalone shop (shop.kaysworks.com)
+#  Native Netlify functions: shop.js (public) + shop-admin.js (admin)
+#  Àpótí Ọlọ́wẹ̀ · Kaysworks 2026
+
+[build]
+  publish = "."                      # static shop HTML at repo root
+  functions = "netlify/functions"
+
+# ── PUBLIC SHOP API → shop.js ─────────────────────────────────────────────────
+[[redirects]]
+  from = "/api/shop/products"
+  to   = "/.netlify/functions/shop?action=shop-products"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/shop/config"
+  to   = "/.netlify/functions/shop?action=shop-config"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/shop/quote"
+  to   = "/.netlify/functions/shop?action=shop-quote"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/shop/payment-init"
+  to   = "/.netlify/functions/shop?action=shop-payment-init"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/shop/order"
+  to   = "/.netlify/functions/shop?action=shop-order"
+  status = 200
+  force  = true
+
+# ── ADMIN SHOP API → shop-admin.js ────────────────────────────────────────────
+[[redirects]]
+  from = "/api/admin/login"
+  to   = "/.netlify/functions/shop-admin?action=login"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/admin/shop-products/:id"
+  to   = "/.netlify/functions/shop-admin?action=shop-products&id=:id"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/admin/shop-products"
+  to   = "/.netlify/functions/shop-admin?action=shop-products"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/admin/shop-config"
+  to   = "/.netlify/functions/shop-admin?action=shop-config"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/admin/shop-orders"
+  to   = "/.netlify/functions/shop-admin?action=shop-orders"
+  status = 200
+  force  = true
+[[redirects]]
+  from = "/api/admin/shop-order/:id"
+  to   = "/.netlify/functions/shop-admin?action=shop-order&id=:id"
+  status = 200
+  force  = true
+
+# ── PRETTY PAGE ROUTES ────────────────────────────────────────────────────────
+# If the shop is the root of this subdomain, you may want "/" → shop.html too.
+[[redirects]]
+  from = "/"
+  to   = "/shop.html"
+  status = 200
+[[redirects]]
+  from = "/shop-orders"
+  to   = "/shop-orders.html"
+  status = 200
+[[redirects]]
+  from = "/shop/series/:series"
+  to   = "/print-series.html"
+  status = 200
+[[redirects]]
+  from = "/shop/:slug"
+  to   = "/print-detail.html"
+  status = 200
+# Catch-all extensionless → .html (keep LAST)
+[[redirects]]
+  from = "/:name"
+  to   = "/:name.html"
+  status = 200
+
+# ── HEADERS ───────────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
+
+# Shop CSP — payment providers + Supabase + crypto price/RPC + wallet beacon.
+# (Vercel analytics hosts removed.)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn-cgi.cloudflare.com https://js.paystack.co https://checkout.flutterwave.com https://unpkg.com https://cdnjs.cloudflare.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://js.paystack.co https://api.paystack.co https://checkout.flutterwave.com https://api.flutterwave.com https://api.binance.com https://api.coinbase.com https://api.coingecko.com https://*.infura.io https://*.alchemy.com https://rpc.tzkt.io https://api.tzkt.io https://rpc.ghostnet.teztnets.com https://*.tezos.marigold.dev https://relay.walletbeacon.io https://*.walletbeacon.io wss://relay.walletbeacon.io wss://*.walletbeacon.io https://beacon-node-1.octez.io https://beacon-node-2.octez.io https://beacon-node-3.octez.io https://beacon-node-4.octez.io https://beacon-node-5.octez.io https://beacon-node-6.octez.io https://beacon-node-7.octez.io https://beacon-node-8.octez.io wss://beacon-node-1.octez.io wss://beacon-node-2.octez.io wss://beacon-node-3.octez.io wss://beacon-node-4.octez.io wss://beacon-node-5.octez.io wss://beacon-node-6.octez.io wss://beacon-node-7.octez.io wss://beacon-node-8.octez.io https://beacon-node-1.sky.sx; worker-src 'self' blob:; frame-src 'self' https://js.paystack.co https://checkout.flutterwave.com https://relay.walletbeacon.io https://*.walletbeacon.io; frame-ancestors 'none'"
