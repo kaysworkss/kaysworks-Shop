@@ -289,30 +289,47 @@ function jsonError(e) {
 async function fetchServerCryptoPrice(asset) {
   const symbol = asset === 'xtz' ? 'XTZUSDT' : 'ETHUSDT';
   const coingeckoId = asset === 'xtz' ? 'tezos' : 'ethereum';
+  const coinbasePair = asset === 'xtz' ? 'XTZ-USD' : 'ETH-USD';
+  const TIMEOUT_MS = 7000; // raised from 3500 — Netlify cold starts + slow upstreams
+  const errors = [];
+
   async function withTimeout(promise, ms) {
     return Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
   }
   async function binance() {
-    const r = await withTimeout(fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`), 3500);
-    if (!r.ok) throw new Error('binance rate failed');
+    const r = await withTimeout(fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`), TIMEOUT_MS);
+    if (!r.ok) throw new Error(`binance ${r.status}`);
     const d = await r.json();
     const price = Number(d.price);
     if (!price || price <= 0) throw new Error('bad binance rate');
     return price;
   }
   async function coingecko() {
-    const r = await withTimeout(fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd`), 3500);
-    if (!r.ok) throw new Error('coingecko rate failed');
+    const r = await withTimeout(fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd`), TIMEOUT_MS);
+    if (!r.ok) throw new Error(`coingecko ${r.status}`);
     const d = await r.json();
     const price = Number(d?.[coingeckoId]?.usd);
     if (!price || price <= 0) throw new Error('bad coingecko rate');
     return price;
   }
-  try {
-    return await Promise.any([binance(), coingecko()]);
-  } catch (_) {
-    return null;
+  async function coinbase() {
+    const r = await withTimeout(fetch(`https://api.coinbase.com/v2/prices/${coinbasePair}/spot`), TIMEOUT_MS);
+    if (!r.ok) throw new Error(`coinbase ${r.status}`);
+    const d = await r.json();
+    const price = Number(d?.data?.amount);
+    if (!price || price <= 0) throw new Error('bad coinbase rate');
+    return price;
   }
+
+  // Try each source; collect errors so a total failure is diagnosable in logs.
+  const sources = [['binance', binance], ['coingecko', coingecko], ['coinbase', coinbase]];
+  const settled = await Promise.allSettled(sources.map(([, fn]) => fn()));
+  for (let i = 0; i < settled.length; i++) {
+    if (settled[i].status === 'fulfilled' && settled[i].value > 0) return settled[i].value;
+    errors.push(`${sources[i][0]}: ${settled[i].reason?.message || settled[i].reason}`);
+  }
+  console.error(`[shop-quote] all crypto price sources failed for ${asset}:`, errors.join(' | '));
+  return null;
 }
 
 async function handleShopQuote(ctx, supabase) {
@@ -329,7 +346,7 @@ async function handleShopQuote(ctx, supabase) {
     if (method === 'eth' || method === 'tezos') {
       const asset = method === 'tezos' ? 'xtz' : 'eth';
       const price = await fetchServerCryptoPrice(asset);
-      if (!price) return json(503, { error: `${asset.toUpperCase()} rate unavailable` });
+      if (!price) return json(503, { error: `${asset.toUpperCase()} rate unavailable (price sources unreachable from server)` });
       extra.crypto_asset = asset;
       extra.crypto_usd_price = price;
       extra.crypto_amount = asset === 'eth'
