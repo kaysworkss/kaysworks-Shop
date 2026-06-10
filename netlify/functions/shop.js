@@ -1,14 +1,14 @@
-// ─────────────────────────────────────────────────────
-//  Public shop API — native Netlify Function
+﻿// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Public shop API â€” native Netlify Function
 //  Ported verbatim from game.js (shop section). Logic unchanged;
 //  only the handler interface is native (event in, response out).
-//  Routes (via netlify.toml redirects → ?action=):
+//  Routes (via netlify.toml redirects â†’ ?action=):
 //    shop-products | shop-config | shop-quote | shop-payment-init | shop-order
-// ─────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const crypto = require('crypto');
 const { getSupabase, json, preflight, parseEvent } = require('./_shop-lib');
 
-// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+// â”€â”€ PRODUCTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopProducts(ctx, supabase) {
   if (ctx.method !== 'GET') return json(405, { error: 'Method not allowed' });
 
@@ -96,8 +96,8 @@ async function applyProductTags(products, supabase) {
   });
 }
 
-// ── CHECKOUT COMPUTATION (server-authoritative) ───────────────────────────────
-// Server-authoritative delivery rates — MUST mirror DELIVERY_RATES in shop.html.
+// â”€â”€ CHECKOUT COMPUTATION (server-authoritative) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Server-authoritative delivery rates â€” MUST mirror DELIVERY_RATES in shop.html.
 const SERVER_DELIVERY_RATES = {
   'pickup':   { small: { ngn: 0,    usd: 0  }, large: { ngn: 0,    usd: 0  } },
   'NG-other': { small: { ngn: 4500, usd: 0  }, large: { ngn: 6500, usd: 0  } },
@@ -107,7 +107,7 @@ const SERVER_DELIVERY_RATES = {
   'AO':       { small: { ngn: 0,    usd: 50 }, large: { ngn: 0,    usd: 68 } },
   'ROW':      { small: { ngn: 0,    usd: 48 }, large: { ngn: 0,    usd: 62 } },
 };
-const SERVER_LARGE_PRINT_VARIANTS = ['12×16"', '12×18"', '18×24"', '24×36"'];
+const SERVER_LARGE_PRINT_VARIANTS = ['12Ã—16"', '12Ã—18"', '18Ã—24"', '24Ã—36"'];
 const NGN_PER_USD = 1600;
 
 function serverVariantPrice(product, variantKey, variant, currency) {
@@ -158,7 +158,7 @@ async function computeShopCheckout(body, supabase) {
     const stockByVariant = product.stock_by_variant || {};
     const sv = stockByVariant[vkey] !== undefined ? stockByVariant[vkey] : stockByVariant[item.variant];
     if (sv !== undefined && sv < item.qty) {
-      const err = new Error(`Only ${sv} left in stock for ${product.name} · ${item.variant}`);
+      const err = new Error(`Only ${sv} left in stock for ${product.name} Â· ${item.variant}`);
       err.statusCode = 409;
       err.product_id = item.id;
       err.variant = item.variant;
@@ -225,7 +225,7 @@ async function computeShopCheckout(body, supabase) {
   };
 }
 
-// ── QUOTE SIGNING (HMAC) ──────────────────────────────────────────────────────
+// â”€â”€ QUOTE SIGNING (HMAC) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function shopQuoteSecret() {
   return process.env.SHOP_QUOTE_SECRET
       || process.env.ADMIN_SESSION_SECRET
@@ -237,12 +237,12 @@ function signShopQuote(payload) {
   return crypto.createHmac('sha256', shopQuoteSecret()).update(JSON.stringify(payload)).digest('hex');
 }
 
-function makeShopQuote(checkout, extra = {}) {
+function makeShopQuote(checkout, extra = {}, ttlMs = 15 * 60 * 1000) {
   const now = Date.now();
   const payload = {
     v: 1,
     iat: now,
-    exp: now + 15 * 60 * 1000,
+    exp: now + ttlMs,
     items: checkout.trustedItems.map(i => ({ id: i.id, variantKey: i.variantKey, qty: i.qty })),
     delivery_method: checkout.method,
     delivery_zone: checkout.zone,
@@ -290,7 +290,7 @@ async function fetchServerCryptoPrice(asset) {
   const symbol = asset === 'xtz' ? 'XTZUSDT' : 'ETHUSDT';
   const coingeckoId = asset === 'xtz' ? 'tezos' : 'ethereum';
   const coinbasePair = asset === 'xtz' ? 'XTZ-USD' : 'ETH-USD';
-  const TIMEOUT_MS = 7000; // raised from 3500 — Netlify cold starts + slow upstreams
+  const TIMEOUT_MS = 7000; // raised from 3500 â€” Netlify cold starts + slow upstreams
   const errors = [];
 
   async function withTimeout(promise, ms) {
@@ -356,7 +356,8 @@ async function handleShopQuote(ctx, supabase) {
       extra.crypto_asset = method;
       extra.crypto_amount = +checkout.totalUsd.toFixed(2);
     }
-    const quote = makeShopQuote(checkout, extra);
+    const isCryptoQuote = ['eth','tezos','usdc','usdt'].includes(method);
+    const quote = makeShopQuote(checkout, extra, isCryptoQuote ? 5 * 60 * 1000 : 15 * 60 * 1000);
     return json(200, { ok: true, quote, checkout });
   } catch (e) {
     return jsonError(e);
@@ -422,7 +423,7 @@ async function handleShopPaymentInit(ctx, supabase) {
   }
 }
 
-// ── ON-CHAIN PAYMENT VERIFICATION ─────────────────────────────────────────────
+// â”€â”€ ON-CHAIN PAYMENT VERIFICATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ERC20_CONTRACTS = {
   usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   usdt: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -633,7 +634,7 @@ async function verifyCardPayment({ provider, reference, expectedTotalNgn }) {
   throw e;
 }
 
-// ── STOCK CLAIM / RELEASE ─────────────────────────────────────────────────────
+// â”€â”€ STOCK CLAIM / RELEASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function claimVariantStock(supabase, item) {
   const vkey = item.variantKey || item.variant;
   const { data, error } = await supabase.rpc('decrement_variant_stock', {
@@ -663,15 +664,41 @@ async function releaseVariantStock(supabase, item) {
   }
 }
 
-// ── ORDER REFERENCE ───────────────────────────────────────────────────────────
+// â”€â”€ ORDER REFERENCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function makeOrderRef() {
   return 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + crypto.randomBytes(3).toString('hex').toUpperCase();
 }
 
-// ── PENDING-FIRST FLOW ────────────────────────────────────────────────────────
+function cryptoOrderLockFromQuote(orderRef, paymentMethod, quote) {
+  if (!['eth','tezos','usdc','usdt'].includes(paymentMethod) || !quote || !quote.crypto_amount) return null;
+  return {
+    kind: 'crypto_order_lock',
+    order_hash: orderRef,
+    payment_method: paymentMethod,
+    crypto_asset: quote.crypto_asset || paymentMethod,
+    crypto_amount: quote.crypto_amount,
+    crypto_usd_price: quote.crypto_usd_price || null,
+    quote_iat: quote.iat || null,
+    quote_exp: quote.exp || null,
+    total_usd: quote.total_usd || null,
+    checkout_quote: quote,
+  };
+}
+
+function readCryptoOrderLock(order) {
+  for (const source of [order.payment_metadata, order.admin_note]) {
+    try {
+      const note = typeof source === 'string' ? JSON.parse(source) : source;
+      if (note && note.kind === 'crypto_order_lock') return note;
+    } catch (_) {}
+  }
+  return null;
+}
+
+// â”€â”€ PENDING-FIRST FLOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Step 1: create a pending order BEFORE payment. Records items, totals, customer,
 // and a generated order_ref. No stock touched, no payment verified yet. The
-// returned order_ref is the durable handle — payment can be confirmed later even
+// returned order_ref is the durable handle â€” payment can be confirmed later even
 // if the customer's cart is gone.
 async function handleShopOrderCreate(ctx, supabase) {
   if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
@@ -691,6 +718,7 @@ async function handleShopOrderCreate(ctx, supabase) {
   }
 
   const orderRef = makeOrderRef();
+  const cryptoLock = cryptoOrderLockFromQuote(orderRef, paymentMethod, body.checkout_quote);
   const { data: order, error: orderError } = await supabase
     .from('shop_orders')
     .insert({
@@ -706,6 +734,7 @@ async function handleShopOrderCreate(ctx, supabase) {
       delivery_method:  checkout.method.slice(0, 40),
       delivery_zone:    checkout.zone.slice(0, 40),
       payment_method:  paymentMethod,
+      payment_metadata: cryptoLock || undefined,
       status: 'pending',
     })
     .select('id, order_ref')
@@ -715,14 +744,19 @@ async function handleShopOrderCreate(ctx, supabase) {
   return json(200, {
     ok: true,
     order_ref: order.order_ref,
+    order_hash: order.order_ref,
     order_id: order.id,
     total_ngn: checkout.totalNgn,
     total_usd: checkout.totalUsd,
+    crypto_amount: cryptoLock?.crypto_amount,
+    crypto_asset: cryptoLock?.crypto_asset,
+    crypto_usd_price: cryptoLock?.crypto_usd_price,
+    quote_expires_at: cryptoLock?.quote_exp,
   });
 }
 
 // Step 2: confirm payment for an existing pending order. Looks the order up by
-// order_ref (NOT the cart — so this works even if the browser cart is gone),
+// order_ref (NOT the cart â€” so this works even if the browser cart is gone),
 // re-derives a checkout from the SAVED items, verifies the payment on-chain or
 // via the card gateway, decrements stock, and flips the order to 'paid'.
 async function handleShopOrderConfirm(ctx, supabase) {
@@ -731,7 +765,7 @@ async function handleShopOrderConfirm(ctx, supabase) {
   const orderRef = String(body.order_ref || '').slice(0, 80);
   if (!orderRef) return json(400, { error: 'order_ref is required' });
 
-  // Load the pending order — this is the source of truth for what was bought.
+  // Load the pending order â€” this is the source of truth for what was bought.
   const { data: order, error: loadErr } = await supabase
     .from('shop_orders')
     .select('*')
@@ -781,14 +815,30 @@ async function handleShopOrderConfirm(ctx, supabase) {
   let chainVerification = null, cardVerification = null;
   if (isCryptoPayment) {
     if (!payerAddress) return json(400, { error: 'Sending wallet address is required' });
+    const bodyOrderHash = String(body.order_hash || body.order_ref || '').slice(0, 80);
+    if (bodyOrderHash !== orderRef) return json(400, { error: 'Order hash does not match this order' });
+    const cryptoLock = readCryptoOrderLock(order);
+    if (!cryptoLock || !cryptoLock.checkout_quote || !cryptoLock.checkout_quote.crypto_amount) {
+      return json(400, { error: 'Locked crypto amount is missing for this order' });
+    }
+    if (cryptoLock.payment_method && cryptoLock.payment_method !== paymentMethod) {
+      return json(400, { error: 'Payment method does not match the locked order' });
+    }
     try {
       chainVerification = await verifyCryptoPaymentOnChain({
         paymentMethod,
         paymentRef,
         payerAddress,
-        quote: body.checkout_quote || { crypto_amount: body.crypto_amount },
+        quote: cryptoLock.checkout_quote,
         supabase,
       });
+      chainVerification = {
+        ...chainVerification,
+        locked_crypto_amount: cryptoLock.crypto_amount,
+        locked_crypto_asset: cryptoLock.crypto_asset,
+        locked_usd_price: cryptoLock.crypto_usd_price,
+        order_hash: orderRef,
+      };
     } catch (e) {
       return jsonError(e);
     }
@@ -817,7 +867,7 @@ async function handleShopOrderConfirm(ctx, supabase) {
     if (!result.ok) {
       for (const c of claimed) await releaseVariantStock(supabase, c);
       return json(409, {
-        error: `Sold out: ${item.name} · ${item.variant} is no longer available`,
+        error: `Sold out: ${item.name} Â· ${item.variant} is no longer available`,
         product_id: item.id,
         variant: item.variant,
         sold_out: true,
@@ -833,6 +883,14 @@ async function handleShopOrderConfirm(ctx, supabase) {
       status: 'paid',
       payment_method: paymentMethod,
       payment_ref: paymentRef,
+      payment_metadata: isCryptoPayment ? {
+        ...(readCryptoOrderLock(order) || {}),
+        payer_address: payerAddress,
+        payment_ref: paymentRef,
+        received_amount: chainVerification?.received_amount,
+        confirmations: chainVerification?.confirmations,
+        paid_at: new Date().toISOString(),
+      } : order.payment_metadata,
       updated_at: new Date().toISOString(),
     })
     .eq('order_ref', orderRef);
@@ -853,7 +911,7 @@ async function handleShopOrderConfirm(ctx, supabase) {
   });
 }
 
-// ── ORDER (legacy single-shot — kept for backward compatibility) ──────────────
+// â”€â”€ ORDER (legacy single-shot â€” kept for backward compatibility) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopOrder(ctx, supabase) {
   if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
   const body = ctx.body || {};
@@ -937,7 +995,7 @@ async function handleShopOrder(ctx, supabase) {
     if (!result.ok) {
       for (const c of claimed) await releaseVariantStock(supabase, c);
       return json(409, {
-        error: `Sold out: ${item.name} · ${item.variant} is no longer available`,
+        error: `Sold out: ${item.name} Â· ${item.variant} is no longer available`,
         product_id: item.id,
         variant: item.variant,
         sold_out: true,
@@ -981,7 +1039,7 @@ async function handleShopOrder(ctx, supabase) {
   });
 }
 
-// ── CONFIG ────────────────────────────────────────────────────────────────────
+// â”€â”€ CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopConfig(ctx, supabase) {
   if (ctx.method !== 'GET') return json(405, { error: 'Method not allowed' });
   const { data, error } = await supabase
@@ -994,13 +1052,13 @@ async function handleShopConfig(ctx, supabase) {
   return json(200, data || {});
 }
 
-// ── Netlify entry point ───────────────────────────────────────────────────────
+// â”€â”€ Netlify entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return preflight();
 
   const ctx = parseEvent(event);
   // Netlify can drop the ?action= appended by a redirect rewrite, so fall back
-  // to deriving it from the request path (e.g. /api/shop/quote → shop-quote).
+  // to deriving it from the request path (e.g. /api/shop/quote â†’ shop-quote).
   let action = (ctx.query.action || '').toString();
   if (!action) {
     const m = (ctx.path || '').match(/\/(?:api\/shop|shop)\/([a-z-]+)/i);
@@ -1024,3 +1082,6 @@ exports.handler = async (event) => {
     return jsonError(e);
   }
 };
+
+
+

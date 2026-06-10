@@ -1,14 +1,14 @@
-// ─────────────────────────────────────────────────────
-//  Admin shop API — native Netlify Function
+﻿// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Admin shop API â€” native Netlify Function
 //  Ported verbatim from admin.js (auth + shop section). Logic unchanged;
 //  only the handler interface is native (event in, response out).
-//  Routes (via netlify.toml redirects → ?action=):
+//  Routes (via netlify.toml redirects â†’ ?action=):
 //    login | shop-products | shop-config | shop-orders | shop-order
-// ─────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const crypto = require('crypto');
 const { getSupabase, json, preflight, parseEvent } = require('./_shop-lib');
 
-// ── Auth helpers ──────────────────────────────────────────────────────────────
+// â”€â”€ Auth helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Signed token: HMAC-SHA256(randomId, ADMIN_TOKEN). Stateless.
 function generateToken() {
   const id     = crypto.randomBytes(16).toString('hex');
@@ -42,7 +42,7 @@ async function handleLogin(ctx) {
   return json(200, { token: generateToken() });
 }
 
-// ── shop-products (GET/POST/PATCH/DELETE) ─────────────────────────────────────
+// â”€â”€ shop-products (GET/POST/PATCH/DELETE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopProducts(ctx, supabase) {
   if (ctx.method === 'GET') {
     const id = ctx.query.id;
@@ -72,7 +72,7 @@ async function handleShopProducts(ctx, supabase) {
         category:           String(body.category || 'prints').slice(0, 40),
         print_type:         String(body.print_type || '').slice(0, 40),
         description:        String(body.description || body.desc || '').slice(0, 1000),
-        emoji:              String(body.emoji || '✦').slice(0, 10),
+        emoji:              String(body.emoji || 'âœ¦').slice(0, 10),
         variants:           body.variants || [],
         available_variants: body.available_variants || [],
         prices_ngn:         body.prices_ngn || {},
@@ -158,7 +158,7 @@ async function handleShopProducts(ctx, supabase) {
   return json(405, { error: 'Method not allowed' });
 }
 
-// ── shop-config (GET/POST) ────────────────────────────────────────────────────
+// â”€â”€ shop-config (GET/POST) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopConfig(ctx, supabase) {
   if (ctx.method === 'GET') {
     const { data, error } = await supabase
@@ -188,7 +188,7 @@ async function handleShopConfig(ctx, supabase) {
   return json(405, { error: 'Method not allowed' });
 }
 
-// ── shop-orders (GET) ─────────────────────────────────────────────────────────
+// â”€â”€ shop-orders (GET) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopOrders(ctx, supabase) {
   if (ctx.method !== 'GET') return json(405, { error: 'Method not allowed' });
   const status = ctx.query.status || 'all';
@@ -197,22 +197,54 @@ async function handleShopOrders(ctx, supabase) {
     .select('*')
     .order('created_at', { ascending: false })
     .limit(200);
-  if (status !== 'all') query = query.eq('status', status);
+  if (status === 'paid_unshipped') {
+    query = query.in('status', ['paid', 'processing']);
+  } else if (status === 'pending_payment') {
+    query = query.eq('status', 'pending');
+  } else if (status !== 'all') {
+    query = query.eq('status', status);
+  }
   const { data, error } = await query;
   if (error) return json(500, { error: error.message });
   return json(200, data || []);
 }
 
-// ── shop-order (PATCH) ────────────────────────────────────────────────────────
+// â”€â”€ shop-order (PATCH) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopOrderUpdate(ctx, supabase) {
-  if (ctx.method !== 'PATCH') return json(405, { error: 'Method not allowed' });
   const id = ctx.query.id;
   if (!id) return json(400, { error: 'id required' });
+
+  if (ctx.method === 'DELETE') {
+    const shouldRestock = String(ctx.query.restock || '') === '1';
+    if (shouldRestock) {
+      const { data: order, error: loadErr } = await supabase
+        .from('shop_orders')
+        .select('items')
+        .eq('id', id)
+        .maybeSingle();
+      if (loadErr && loadErr.code !== 'PGRST116') return json(500, { error: loadErr.message });
+      for (const item of (Array.isArray(order?.items) ? order.items : [])) {
+        const vkey = item.variantKey || item.variant;
+        const qty = Math.max(1, Number(item.qty) || 1);
+        const { error: stockErr } = await supabase.rpc('decrement_variant_stock', {
+          p_id: item.id,
+          p_variant_key: vkey,
+          p_qty: -qty,
+        });
+        if (stockErr) return json(500, { error: `Could not restock ${item.name || item.id}: ${stockErr.message}` });
+      }
+    }
+    const { error } = await supabase.from('shop_orders').delete().eq('id', id);
+    if (error) return json(500, { error: error.message });
+    return json(200, { ok: true, restocked: shouldRestock });
+  }
+
+  if (ctx.method !== 'PATCH') return json(405, { error: 'Method not allowed' });
   const body = ctx.body || {};
   const patch = { updated_at: new Date().toISOString() };
 
   if (body.status !== undefined) {
-    if (!['pending', 'processing', 'shipped', 'fulfilled', 'cancelled'].includes(body.status))
+    if (!['pending', 'paid', 'processing', 'shipped', 'fulfilled', 'cancelled'].includes(body.status))
       return json(422, { error: 'Invalid status' });
     patch.status = body.status;
     if (body.status === 'fulfilled') patch.fulfilled_at = new Date().toISOString();
@@ -226,25 +258,12 @@ async function handleShopOrderUpdate(ctx, supabase) {
   return json(200, { ok: true });
 }
 
-// ── Netlify entry point ───────────────────────────────────────────────────────
+// â”€â”€ Netlify entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return preflight();
 
   const ctx = parseEvent(event);
-  // Netlify can drop the ?action= appended by a redirect rewrite, so fall back
-  // to deriving it from the path: /api/admin/login → login,
-  // /api/admin/shop-products → shop-products, etc.
-  let action = (ctx.query.action || '').toString();
-  if (!action) {
-    const m = (ctx.path || '').match(/\/admin\/([a-z-]+)/i);
-    if (m) action = m[1].toLowerCase();
-  }
-  // Recover trailing :id from the path if the redirect dropped it
-  // (e.g. /api/admin/shop-products/<id>).
-  if (!ctx.query.id) {
-    const idm = (ctx.path || '').match(/\/admin\/[a-z-]+\/([^/?]+)/i);
-    if (idm && idm[1] !== 'undefined') ctx.query.id = idm[1];
-  }
+  const action = (ctx.query.action || '').toString();
 
   // Login doesn't need a token
   if (action === 'login') return handleLogin(ctx);
@@ -263,3 +282,5 @@ exports.handler = async (event) => {
       return json(404, { error: `Unknown admin action: ${action}` });
   }
 };
+
+
