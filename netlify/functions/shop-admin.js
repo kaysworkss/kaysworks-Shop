@@ -231,7 +231,20 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return preflight();
 
   const ctx = parseEvent(event);
-  const action = (ctx.query.action || '').toString();
+  // Netlify can drop the ?action= appended by a redirect rewrite, so fall back
+  // to deriving it from the path: /api/admin/login → login,
+  // /api/admin/shop-products → shop-products, etc.
+  let action = (ctx.query.action || '').toString();
+  if (!action) {
+    const m = (ctx.path || '').match(/\/admin\/([a-z-]+)/i);
+    if (m) action = m[1].toLowerCase();
+  }
+  // Recover trailing :id from the path if the redirect dropped it
+  // (e.g. /api/admin/shop-products/<id>).
+  if (!ctx.query.id) {
+    const idm = (ctx.path || '').match(/\/admin\/[a-z-]+\/([^/?]+)/i);
+    if (idm && idm[1] !== 'undefined') ctx.query.id = idm[1];
+  }
 
   // Login doesn't need a token
   if (action === 'login') return handleLogin(ctx);

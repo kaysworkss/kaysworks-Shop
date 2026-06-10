@@ -809,7 +809,13 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return preflight();
 
   const ctx = parseEvent(event);
-  const action = (ctx.query.action || '').toString();
+  // Netlify can drop the ?action= appended by a redirect rewrite, so fall back
+  // to deriving it from the request path (e.g. /api/shop/quote → shop-quote).
+  let action = (ctx.query.action || '').toString();
+  if (!action) {
+    const m = (ctx.path || '').match(/\/(?:api\/shop|shop)\/([a-z-]+)/i);
+    if (m) action = 'shop-' + m[1].toLowerCase();
+  }
   const supabase = getSupabase();
 
   try {
