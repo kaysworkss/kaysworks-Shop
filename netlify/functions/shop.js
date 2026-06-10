@@ -1,14 +1,14 @@
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// 
 //  Public shop API - native Netlify Function
 //  Ported verbatim from game.js (shop section). Logic unchanged;
 //  only the handler interface is native (event in, response out).
 //  Routes (via netlify.toml redirects -> ?action=):
 //    shop-products | shop-config | shop-quote | shop-payment-init | shop-order
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// 
 const crypto = require('crypto');
 const { getSupabase, json, preflight, parseEvent } = require('./_shop-lib');
 
-// â”€â”€ PRODUCTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// PRODUCTS 
 async function handleShopProducts(ctx, supabase) {
   if (ctx.method !== 'GET') return json(405, { error: 'Method not allowed' });
 
@@ -96,7 +96,7 @@ async function applyProductTags(products, supabase) {
   });
 }
 
-// â”€â”€ CHECKOUT COMPUTATION (server-authoritative) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// CHECKOUT COMPUTATION (server-authoritative) 
 // Server-authoritative delivery rates - MUST mirror DELIVERY_RATES in shop.html.
 const SERVER_DELIVERY_RATES = {
   'pickup':   { small: { ngn: 0,    usd: 0  }, large: { ngn: 0,    usd: 0  } },
@@ -225,7 +225,7 @@ async function computeShopCheckout(body, supabase) {
   };
 }
 
-// â”€â”€ QUOTE SIGNING (HMAC) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// QUOTE SIGNING (HMAC) 
 function shopQuoteSecret() {
   return process.env.SHOP_QUOTE_SECRET
       || process.env.ADMIN_SESSION_SECRET
@@ -423,7 +423,7 @@ async function handleShopPaymentInit(ctx, supabase) {
   }
 }
 
-// â”€â”€ ON-CHAIN PAYMENT VERIFICATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ON-CHAIN PAYMENT VERIFICATION 
 const ERC20_CONTRACTS = {
   usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   usdt: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -634,7 +634,7 @@ async function verifyCardPayment({ provider, reference, expectedTotalNgn }) {
   throw e;
 }
 
-// â”€â”€ STOCK CLAIM / RELEASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// STOCK CLAIM / RELEASE 
 async function claimVariantStock(supabase, item) {
   const vkey = item.variantKey || item.variant;
   const { data, error } = await supabase.rpc('decrement_variant_stock', {
@@ -664,7 +664,7 @@ async function releaseVariantStock(supabase, item) {
   }
 }
 
-// â”€â”€ ORDER REFERENCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ORDER REFERENCE 
 function makeOrderRef() {
   return 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + crypto.randomBytes(3).toString('hex').toUpperCase();
 }
@@ -695,7 +695,7 @@ function readCryptoOrderLock(order) {
   return null;
 }
 
-// â”€â”€ PENDING-FIRST FLOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// PENDING-FIRST FLOW 
 // Step 1: create a pending order BEFORE payment. Records items, totals, customer,
 // and a generated order_ref. No stock touched, no payment verified yet. The
 // returned order_ref is the durable handle - payment can be confirmed later even
@@ -911,7 +911,7 @@ async function handleShopOrderConfirm(ctx, supabase) {
   });
 }
 
-// â”€â”€ ORDER (legacy single-shot - kept for backward compatibility) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ORDER (legacy single-shot - kept for backward compatibility) 
 async function handleShopOrder(ctx, supabase) {
   if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
   const body = ctx.body || {};
@@ -1039,7 +1039,7 @@ async function handleShopOrder(ctx, supabase) {
   });
 }
 
-// â”€â”€ CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// CONFIG 
 async function handleShopConfig(ctx, supabase) {
   if (ctx.method !== 'GET') return json(405, { error: 'Method not allowed' });
   const { data, error } = await supabase
@@ -1052,7 +1052,7 @@ async function handleShopConfig(ctx, supabase) {
   return json(200, data || {});
 }
 
-// â”€â”€ Netlify entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Netlify entry point 
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return preflight();
 

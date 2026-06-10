@@ -1,14 +1,14 @@
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// 
 //  Admin shop API - native Netlify Function
 //  Ported verbatim from admin.js (auth + shop section). Logic unchanged;
 //  only the handler interface is native (event in, response out).
 //  Routes (via netlify.toml redirects -> ?action=):
 //    login | shop-products | shop-config | shop-orders | shop-order
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// 
 const crypto = require('crypto');
 const { getSupabase, json, preflight, parseEvent } = require('./_shop-lib');
 
-// â”€â”€ Auth helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Auth helpers 
 // Signed token: HMAC-SHA256(randomId, ADMIN_TOKEN). Stateless.
 function generateToken() {
   const id     = crypto.randomBytes(16).toString('hex');
@@ -42,7 +42,7 @@ async function handleLogin(ctx) {
   return json(200, { token: generateToken() });
 }
 
-// â”€â”€ shop-products (GET/POST/PATCH/DELETE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// shop-products (GET/POST/PATCH/DELETE) 
 async function handleShopProducts(ctx, supabase) {
   if (ctx.method === 'GET') {
     const id = ctx.query.id;
@@ -158,7 +158,7 @@ async function handleShopProducts(ctx, supabase) {
   return json(405, { error: 'Method not allowed' });
 }
 
-// â”€â”€ shop-config (GET/POST) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// shop-config (GET/POST) 
 async function handleShopConfig(ctx, supabase) {
   if (ctx.method === 'GET') {
     const { data, error } = await supabase
@@ -188,7 +188,7 @@ async function handleShopConfig(ctx, supabase) {
   return json(405, { error: 'Method not allowed' });
 }
 
-// â”€â”€ shop-orders (GET) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// shop-orders (GET) 
 async function handleShopOrders(ctx, supabase) {
   if (ctx.method !== 'GET') return json(405, { error: 'Method not allowed' });
   const status = ctx.query.status || 'all';
@@ -209,7 +209,7 @@ async function handleShopOrders(ctx, supabase) {
   return json(200, data || []);
 }
 
-// â”€â”€ shop-order (PATCH) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// shop-order (PATCH) 
 async function handleShopOrderUpdate(ctx, supabase) {
   const id = ctx.query.id;
   if (!id) return json(400, { error: 'id required' });
@@ -258,7 +258,7 @@ async function handleShopOrderUpdate(ctx, supabase) {
   return json(200, { ok: true });
 }
 
-// â”€â”€ Netlify entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Netlify entry point 
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return preflight();
 
