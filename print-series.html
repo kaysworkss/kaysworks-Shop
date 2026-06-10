@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Series · Kay's Works</title>
+<link rel="icon" type="image/svg+xml" href="/images/kaysworkslogo.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+button{-webkit-tap-highlight-color:transparent;cursor:pointer}
+img{display:block;max-width:100%}
+
+:root {
+  --clay:#c4845a; --rust:#9e4f2e; --sand:#e8d5b0; --linen:#f5ede0;
+  --bark:#4a3228; --moss:#6b7c5c; --ash:#8a7060; --ink:#1e1410;
+  --gold:#c9993a; --parchment:#ede0c8;
+  --bg:var(--linen); --bg-alt:var(--parchment); --bg-card:#fff;
+  --text:var(--ink); --text-muted:var(--ash);
+  --border:rgba(74,50,40,0.12); --border-hover:rgba(196,132,90,0.45);
+  --nav-scrolled:rgba(245,237,224,0.94);
+}
+body.dark {
+  --bg:#141010; --bg-alt:#1e1510; --bg-card:#1e1510;
+  --text:#e8d5b0; --text-muted:#9a8878;
+  --border:rgba(196,132,90,0.12); --border-hover:rgba(196,132,90,0.5);
+  --nav-scrolled:rgba(20,16,12,0.92);
+  --linen:#141010; --parchment:#1e1510; --ink:#e8d5b0; --ash:#b09888;
+}
+
+body::before{content:'';pointer-events:none;position:fixed;inset:0;z-index:0;opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+html{scroll-behavior:smooth;}
+body{font-family:'Crimson Pro',serif;background:var(--bg);color:var(--text);transition:background 0.4s,color 0.4s;min-height:100vh;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(1.2rem,4vw,3rem);height:60px;background:transparent;transition:background 0.4s;}
+nav.scrolled{background:var(--nav-scrolled);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Cinzel',serif;font-size:0.78rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:1.4rem;}
+.nav-links{display:flex;gap:1.4rem;}
+.nav-links a{font-family:'Crimson Pro',serif;font-size:0.92rem;color:var(--text);opacity:0.78;transition:opacity 0.2s,color 0.2s;}
+.nav-links a:hover{opacity:1;color:var(--rust);}
+.theme-btn{background:none;border:none;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;border-radius:50%;transition:background 0.2s;}
+.theme-btn:hover{background:rgba(201,153,58,0.1);}
+
+/* Hero */
+.series-hero{
+  padding:calc(60px + clamp(3rem,8vw,6rem)) clamp(1.2rem,4vw,3rem) clamp(2rem,4vw,3.5rem);
+  max-width:760px;
+}
+.breadcrumb{display:flex;align-items:center;gap:0.5rem;font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.8rem;}
+.breadcrumb a{transition:color 0.2s;}
+.breadcrumb a:hover{color:var(--clay);}
+.breadcrumb-sep{color:var(--border-hover);}
+.series-eyebrow{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--clay);margin-bottom:0.8rem;}
+.series-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,6vw,4.5rem);font-weight:300;line-height:1.05;color:var(--text);margin-bottom:0.8rem;}
+.series-title em{font-style:italic;color:var(--rust);}
+.series-desc{font-size:1.1rem;line-height:1.85;color:var(--text-muted);max-width:560px;margin-bottom:1.6rem;}
+.series-meta{display:flex;gap:2rem;flex-wrap:wrap;}
+.series-meta-item{font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);}
+.series-meta-item span{display:block;color:var(--gold);margin-top:0.2rem;font-size:0.62rem;}
+
+/* Divider */
+.divider-ornament{display:flex;align-items:center;gap:1rem;padding:0 clamp(1.2rem,4vw,3rem);margin-bottom:3rem;}
+.divider-ornament::before,.divider-ornament::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--clay),transparent);}
+.divider-ornament-text{font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+
+/* Print grid */
+.series-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:2rem;
+  padding:0 clamp(1.2rem,4vw,3rem) 6rem;
+}
+
+/* Print card — more generous than shop card */
+.series-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:3px; overflow:hidden;
+  transition:border-color 0.25s,box-shadow 0.25s,transform 0.25s;
+  display:block; color:inherit;
+  position:relative;
+}
+.series-card:hover{border-color:var(--border-hover);box-shadow:0 10px 48px rgba(74,50,40,0.16);transform:translateY(-4px);}
+.series-card-img{
+  aspect-ratio:3/4; overflow:hidden; background:var(--bg-alt);
+  display:flex;align-items:center;justify-content:center;
+  font-size:4rem;color:var(--clay);opacity:0.2;
+  position:relative;
+}
+.series-card-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;}
+.series-card:hover .series-card-img img{transform:scale(1.05);}
+.series-card-badge{
+  position:absolute;top:14px;left:14px;
+  font-family:'Cinzel',serif;font-size:0.46rem;letter-spacing:0.2em;text-transform:uppercase;
+  background:var(--rust);color:#fff;padding:0.3rem 0.65rem;border-radius:2px;
+}
+.series-card-body{padding:1.4rem 1.5rem 1.6rem;}
+.series-card-num{
+  font-family:'Cinzel',serif;font-size:0.48rem;
+  letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:0.4rem;
+}
+.series-card-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.35rem;font-weight:400;line-height:1.15;
+  color:var(--text);margin-bottom:0.4rem;
+}
+.series-card-year{
+  font-family:'Cinzel',serif;font-size:0.48rem;
+  letter-spacing:0.15em;color:var(--text-muted);margin-bottom:0.8rem;
+}
+.series-card-desc{
+  font-size:0.92rem;color:var(--text-muted);line-height:1.65;
+  margin-bottom:1.1rem;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.series-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:0.8rem;border-top:1px solid var(--border);}
+.series-card-price{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--text);}
+.series-card-price-usd{font-family:'Montserrat',sans-serif;font-size:0.6rem;color:var(--text-muted);margin-top:0.1rem;}
+.series-card-cta{
+  font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.55rem 1rem;border:1px solid var(--border);border-radius:2px;
+  color:var(--text-muted);background:none;
+  transition:border-color 0.2s,color 0.2s,background 0.2s;
+}
+.series-card:hover .series-card-cta{border-color:var(--clay);color:var(--clay);}
+
+/* Skeleton */
+.skeleton{background:var(--bg-alt);border-radius:2px;animation:shimmer 1.6s infinite;}
+@keyframes shimmer{0%{opacity:0.6}50%{opacity:1}100%{opacity:0.6}}
+
+/* Footer */
+footer{text-align:center;padding:2.5rem 2rem;border-top:1px solid var(--border);font-family:'Crimson Pro',serif;font-size:0.9rem;color:var(--text-muted);}
+footer a{color:var(--clay);transition:color 0.2s;}
+footer a:hover{color:var(--rust);}
+
+@media(max-width:600px){
+  .nav-links{display:none;}
+  .series-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a href="/" class="nav-logo"><span style="font-weight:600">KAY'S</span>&nbsp;<span style="font-weight:500">WORKS</span></a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/auction">Auction</a>
+      <a href="/shop">Shop</a>
+    </div>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<div id="app">
+  <!-- Skeleton -->
+  <div id="skeleton" style="padding:calc(60px + 3rem) clamp(1.2rem,4vw,3rem) 3rem">
+    <div class="skeleton" style="width:200px;height:12px;margin-bottom:1.5rem"></div>
+    <div class="skeleton" style="width:70%;height:55px;margin-bottom:1rem"></div>
+    <div class="skeleton" style="width:50%;height:16px;margin-bottom:0.6rem"></div>
+    <div class="skeleton" style="width:60%;height:16px;margin-bottom:2rem"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem">
+      ${[1,2,3].map(()=>`<div><div class="skeleton" style="aspect-ratio:3/4;margin-bottom:1rem"></div><div class="skeleton" style="height:14px;margin-bottom:0.5rem"></div><div class="skeleton" style="height:12px;width:60%"></div></div>`).join('')}
+    </div>
+  </div>
+  <div id="seriesContent" style="display:none"></div>
+  <div id="errorState" style="display:none;padding:8rem 2rem;text-align:center">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--text);margin-bottom:0.6rem">Series not found</p>
+    <p style="color:var(--text-muted);margin-bottom:2rem">This series may have moved or doesn't exist yet.</p>
+    <a href="/shop" style="font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.85rem 2rem;border:1px solid var(--border);border-radius:2px;color:var(--text-muted)">Back to shop</a>
+  </div>
+</div>
+
+<div id="gridSection" style="display:none">
+  <div class="divider-ornament"><span class="divider-ornament-text" id="gridLabel">Prints in this series</span></div>
+  <div class="series-grid" id="seriesGrid"></div>
+</div>
+
+<footer>
+  <p>© 2026 Kay's Works · <a href="mailto:oyeniyikayode4@gmail.com">oyeniyikayode4@gmail.com</a></p>
+</footer>
+
+<script>
+'use strict';
+const seriesSlug = location.pathname.replace(/^\/shop\/series\//, '').replace(/\/$/, '');
+function fmt(n)    { return '₦' + Number(n).toLocaleString('en-NG'); }
+function fmtUsd(n) { return '$' + Number(n).toFixed(0); }
+function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+function printOptionKey(type, size) { return `${type}|${size}`; }
+function getPrintOptions(p) {
+  const variants = Array.isArray(p.variants) ? p.variants : [];
+  const available = p.available_variants || [];
+  const hasNested = variants.some(v => v && typeof v === 'object' && !Array.isArray(v));
+  if (hasNested) {
+    return variants.map(v => {
+      const type = String(v.type || v.print_type || v.name || v.label || 'Print').trim();
+      const sizes = (v.sizes || v.variants || []).map(String).filter(Boolean);
+      const availableSizes = (v.available_sizes || v.available || v.available_variants || sizes).map(String).filter(Boolean);
+      return { type, sizes, availableSizes: availableSizes.length ? availableSizes : sizes };
+    }).filter(o => o.type && o.sizes.length);
+  }
+  if (available && typeof available === 'object' && !Array.isArray(available)) {
+    return Object.entries(available).map(([type, sizes]) => ({
+      type,
+      sizes: (Array.isArray(sizes) ? sizes : []).map(String).filter(Boolean),
+      availableSizes: (Array.isArray(sizes) ? sizes : []).map(String).filter(Boolean),
+    })).filter(o => o.type && o.sizes.length);
+  }
+  const type = String(p.print_type || p.medium || 'Giclee').replace(/\s+print$/i, '').trim() || 'Print';
+  const sizes = variants.map(String).filter(Boolean);
+  const availableSizes = (Array.isArray(available) && available.length ? available : sizes).map(String).filter(Boolean);
+  return sizes.length ? [{ type, sizes, availableSizes }] : [];
+}
+function availablePrintChoices(p) {
+  return getPrintOptions(p).flatMap(o => (o.availableSizes.length ? o.availableSizes : o.sizes).map(size => ({
+    type: o.type,
+    size,
+    key: printOptionKey(o.type, size),
+  })));
+}
+function printPrice(p, key, currency) {
+  const prices = currency === 'usd' ? (p.prices_usd || {}) : (p.prices_ngn || {});
+  if (prices[key] !== undefined) return prices[key];
+  return prices[String(key).split('|').pop()] || 0;
+}
+
+/* Theme */
+function initTheme() {
+  const saved = localStorage.getItem('kaysworks-theme');
+  const dark = saved ? saved==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('themeBtn').textContent = dark ? '' : '<';
+}
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('kaysworks-theme', isDark?'dark':'light');
+  document.getElementById('themeBtn').textContent = isDark?'':'<';
+});
+initTheme();
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY>40);
+},{passive:true});
+
+function renderSeries(prints) {
+  if (!prints.length) { showError(); return; }
+
+  // Use first print to get series-level metadata
+  const first = prints[0];
+  const seriesName = first.series_name || seriesSlug.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const seriesDesc = first.series_desc || `A series of fine art prints by Kay.`;
+  const seriesYear = first.series_year || first.year || '2025';
+
+  document.title = `${seriesName} · Kay's Works`;
+
+  const lowestNgn = Math.min(...prints.flatMap(p => availablePrintChoices(p).map(c => printPrice(p, c.key, 'ngn')).filter(Boolean)));
+
+  // Hero section
+  document.getElementById('seriesContent').innerHTML = `
+    <div class="series-hero">
+      <div class="breadcrumb">
+        <a href="/shop">Shop</a>
+        <span class="breadcrumb-sep">·</span>
+        <span style="color:var(--text)">${seriesName}</span>
+      </div>
+      <p class="series-eyebrow">Print Series</p>
+      <h1 class="series-title"><em>${seriesName}</em></h1>
+      <p class="series-desc">${seriesDesc}</p>
+      <div class="series-meta">
+        <div class="series-meta-item">Pieces<span>${prints.length}</span></div>
+        <div class="series-meta-item">Year<span>${seriesYear}</span></div>
+        <div class="series-meta-item">Starting from<span>${fmt(lowestNgn)}</span></div>
+        <div class="series-meta-item">Medium<span>Giclée · Cotton rag</span></div>
+      </div>
+    </div>`;
+
+  // Grid
+  document.getElementById('gridLabel').textContent = `${prints.length} print${prints.length!==1?'s':''} in this series`;
+  document.getElementById('gridSection').style.display = '';
+  document.getElementById('seriesGrid').innerHTML = prints.map((p,i)=>{
+    const choices = availablePrintChoices(p);
+    const optionCount = getPrintOptions(p).length;
+    const lowestPrice = Math.min(...choices.map(c=>printPrice(p, c.key, 'ngn')).filter(Boolean));
+    const lowestUsd   = Math.min(...choices.map(c=>printPrice(p, c.key, 'usd')).filter(Boolean));
+    const pSlug = p.slug || slugify(p.name);
+    return `
+      <a href="/shop/${pSlug}" class="series-card">
+        <div class="series-card-img">
+          ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}" loading="lazy"/>` : (p.emoji||'=')}
+          ${p.badge ? `<span class="series-card-badge">${p.badge}</span>` : ''}
+        </div>
+        <div class="series-card-body">
+          <p class="series-card-num">No. ${String(i+1).padStart(2,'0')}</p>
+          <h2 class="series-card-title">${p.name}</h2>
+          <p class="series-card-year">${p.year||seriesYear}</p>
+          <p class="series-card-desc">${p.description || p.desc || ''}</p>
+          <div class="series-card-footer">
+            <div>
+              <div class="series-card-price">From ${fmt(lowestPrice)}</div>
+              <div class="series-card-price-usd">${fmtUsd(lowestUsd)} USD · ${optionCount} print option${optionCount!==1?'s':''}</div>
+            </div>
+            <button class="series-card-cta">View print</button>
+          </div>
+        </div>
+      </a>`;
+  }).join('');
+
+  document.getElementById('skeleton').style.display = 'none';
+  document.getElementById('seriesContent').style.display = '';
+}
+
+function showError() {
+  document.getElementById('skeleton').style.display = 'none';
+  document.getElementById('errorState').style.display = '';
+}
+
+async function load() {
+  if (!seriesSlug) { showError(); return; }
+  try {
+    const res = await fetch(`/api/shop/products?series=${encodeURIComponent(seriesSlug)}`);
+    if (!res.ok) { showError(); return; }
+    const prints = await res.json();
+    if (!Array.isArray(prints) || !prints.length) { showError(); return; }
+    renderSeries(prints);
+  } catch { showError(); }
+}
+
+load();
+</script>
+</body>
+</html>

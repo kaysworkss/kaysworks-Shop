@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<!-- SEO meta tags injected by JS once product loads -->
+<title>Print · Kay's Works</title>
+<link rel="icon" type="image/svg+xml" href="/images/kaysworkslogo.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+button{-webkit-tap-highlight-color:transparent;cursor:pointer}
+img{display:block;max-width:100%}
+
+:root {
+  --clay:      #c4845a;
+  --rust:      #9e4f2e;
+  --sand:      #e8d5b0;
+  --linen:     #f5ede0;
+  --bark:      #4a3228;
+  --moss:      #6b7c5c;
+  --ash:       #8a7060;
+  --ink:       #1e1410;
+  --gold:      #c9993a;
+  --parchment: #ede0c8;
+  --bg:        var(--linen);
+  --bg-alt:    var(--parchment);
+  --bg-card:   #fff;
+  --text:      var(--ink);
+  --text-muted: var(--ash);
+  --border:    rgba(74,50,40,0.12);
+  --border-hover: rgba(196,132,90,0.45);
+  --nav-scrolled: rgba(245,237,224,0.94);
+  --shadow:    0 2px 24px rgba(74,50,40,0.09);
+}
+body.dark {
+  --bg:        #141010;
+  --bg-alt:    #1e1510;
+  --bg-card:   #1e1510;
+  --text:      #e8d5b0;
+  --text-muted: #9a8878;
+  --border:    rgba(196,132,90,0.12);
+  --border-hover: rgba(196,132,90,0.5);
+  --nav-scrolled: rgba(20,16,12,0.92);
+  --linen:     #141010;
+  --parchment: #1e1510;
+  --ink:       #e8d5b0;
+  --ash:       #b09888;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Crimson Pro', serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.4s, color 0.4s;
+  min-height: 100vh;
+}
+
+/* ── Noise ── */
+body::before {
+  content:'';pointer-events:none;position:fixed;inset:0;z-index:0;opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 clamp(1.2rem,4vw,3rem); height: 60px;
+  background: transparent;
+  transition: background 0.4s, backdrop-filter 0.4s;
+}
+nav.scrolled {
+  background: var(--nav-scrolled);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family:'Cinzel',serif; font-size:0.78rem;
+  letter-spacing:0.28em; text-transform:uppercase; color:var(--gold);
+}
+.nav-right { display:flex; align-items:center; gap:1.4rem; }
+.nav-links { display:flex; gap:1.4rem; }
+.nav-links a {
+  font-family:'Crimson Pro',serif; font-size:0.92rem;
+  color:var(--text); opacity:0.78; transition:opacity 0.2s, color 0.2s;
+}
+.nav-links a:hover { opacity:1; color:var(--rust); }
+.theme-btn {
+  background:none; border:none; width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold); font-size:1rem; border-radius:50%;
+  transition:background 0.2s;
+}
+.theme-btn:hover { background:rgba(201,153,58,0.1); }
+.nav-cart-link {
+  font-family:'Crimson Pro',serif; font-size:0.92rem;
+  color:var(--text); opacity:0.78; transition:opacity 0.2s, color 0.2s;
+  display:flex; align-items:center; gap:0.4rem; position:relative;
+}
+.nav-cart-link:hover { opacity:1; color:var(--rust); }
+.cart-badge {
+  min-width:16px; height:16px; padding:0 4px; border-radius:999px;
+  background:var(--rust); color:var(--linen);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:'Montserrat',sans-serif; font-size:0.58rem; line-height:1;
+  opacity:0; transform:scale(0.85); transition:opacity 0.2s, transform 0.2s;
+}
+.cart-badge.visible { opacity:1; transform:scale(1); }
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  padding: calc(60px + 1.6rem) clamp(1.2rem,4vw,3rem) 0;
+  display:flex; align-items:center; gap:0.5rem;
+  font-family:'Cinzel',serif; font-size:0.5rem;
+  letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted);
+}
+.breadcrumb a { transition:color 0.2s; }
+.breadcrumb a:hover { color:var(--clay); }
+.breadcrumb-sep { color:var(--border-hover); }
+
+/* ── Loading skeleton ── */
+.skeleton { background:var(--bg-alt); border-radius:2px; animation: shimmer 1.6s infinite; }
+@keyframes shimmer {
+  0%{opacity:0.6} 50%{opacity:1} 100%{opacity:0.6}
+}
+
+/* ── Main layout ── */
+.print-layout {
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: 100vh;
+  padding-top: 0;
+}
+@media(max-width:900px) {
+  .print-layout { grid-template-columns:1fr; }
+}
+
+/* ── Image panel ── */
+.image-panel {
+  position: sticky; top: 60px;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+  background: var(--bg-alt);
+  display:flex; align-items:center; justify-content:center;
+}
+@media(max-width:900px) {
+  .image-panel {
+    position: relative; top:0;
+    height: 60vw; min-height: 300px;
+  }
+}
+
+.hero-img-wrap {
+  width:100%; height:100%;
+  position:relative; overflow:hidden;
+  cursor:crosshair;
+}
+.hero-img-wrap img {
+  width:100%; height:100%;
+  object-fit:contain;
+  transition: transform 0.1s linear;
+  transform-origin: center center;
+  will-change: transform;
+}
+.hero-img-placeholder {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:5rem; color:var(--clay); opacity:0.2;
+}
+
+/* Zoom hint */
+.zoom-hint {
+  position:absolute; bottom:1.2rem; right:1.2rem;
+  font-family:'Cinzel',serif; font-size:0.44rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--text-muted); background:var(--bg);
+  padding:0.4rem 0.8rem; border-radius:2px;
+  border:1px solid var(--border); opacity:0.8;
+  pointer-events:none;
+  transition:opacity 0.3s;
+}
+.hero-img-wrap:hover .zoom-hint { opacity:0; }
+
+/* Thumbnail strip */
+.thumb-strip {
+  position:absolute; bottom:1.2rem; left:1.2rem;
+  display:flex; gap:0.5rem;
+}
+.thumb {
+  width:48px; height:48px; border-radius:2px; overflow:hidden;
+  border:2px solid transparent; cursor:pointer;
+  transition:border-color 0.2s;
+  background:var(--bg);
+}
+.thumb.active { border-color:var(--clay); }
+.thumb img { width:100%; height:100%; object-fit:cover; }
+
+/* ── Info panel ── */
+.info-panel {
+  padding: clamp(2rem,5vw,4rem) clamp(1.4rem,4vw,3rem) 5rem;
+  max-width: 580px;
+  margin-top: 60px;
+}
+@media(max-width:900px) {
+  .info-panel { max-width:100%; margin-top:0; }
+}
+
+.print-series-link {
+  font-family:'Cinzel',serif; font-size:0.52rem;
+  letter-spacing:0.25em; text-transform:uppercase;
+  color:var(--gold); display:inline-flex; align-items:center; gap:0.4rem;
+  margin-bottom:1rem; transition:color 0.2s;
+}
+.print-series-link:hover { color:var(--clay); }
+.print-series-link::before { content:'←'; font-size:0.65rem; }
+
+.print-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:300; line-height:1.05;
+  color:var(--text); margin-bottom:0.5rem;
+}
+.print-title em { font-style:italic; color:var(--clay); }
+
+.detail-tags { display:flex; gap:0.5rem; margin-bottom:0.9rem; flex-wrap:wrap; }
+.detail-tag {
+  font-family:'Cinzel',serif; font-size:0.5rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  padding:0.3rem 0.65rem; border-radius:2px; color:#fff;
+}
+.detail-tag-new { background:var(--moss); }
+.detail-tag-best { background:var(--gold); color:#1a1a1a; }
+
+.print-year {
+  font-family:'Cinzel',serif; font-size:0.52rem;
+  letter-spacing:0.25em; color:var(--text-muted);
+  text-transform:uppercase; margin-bottom:1.6rem;
+}
+
+/* Quote */
+.print-quote {
+  border-left:2px solid var(--clay);
+  padding:0.8rem 1.2rem; margin-bottom:2rem;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.18rem; font-style:italic; font-weight:300;
+  color:var(--text); line-height:1.6;
+}
+.print-quote cite {
+  display:block; margin-top:0.5rem;
+  font-family:'Cinzel',serif; font-size:0.48rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--clay); font-style:normal;
+}
+
+/* Divider */
+.section-divider {
+  display:flex; align-items:center; gap:0.8rem;
+  margin:2rem 0 1.4rem;
+}
+.section-divider span {
+  font-family:'Cinzel',serif; font-size:0.5rem;
+  letter-spacing:0.28em; text-transform:uppercase; color:var(--gold);
+  white-space:nowrap;
+}
+.section-divider::before,.section-divider::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg, transparent, var(--border), transparent);
+}
+.section-divider::before { max-width:30px; }
+
+/* Story / process */
+.print-story {
+  font-size:1.05rem; line-height:1.85;
+  color:var(--text); margin-bottom:1.6rem;
+}
+.print-story p + p { margin-top:1rem; }
+.print-story em { color:var(--clay); font-style:italic; }
+
+.print-process {
+  font-size:0.96rem; line-height:1.8;
+  color:var(--text-muted); margin-bottom:1.6rem;
+}
+
+/* Spec table */
+.spec-table {
+  width:100%; border-collapse:collapse;
+  margin-bottom:2rem; font-size:0.9rem;
+}
+.spec-table tr { border-bottom:1px solid var(--border); }
+.spec-table tr:last-child { border-bottom:none; }
+.spec-table td {
+  padding:0.6rem 0; color:var(--text);
+  font-family:'Crimson Pro',serif; font-size:0.95rem;
+}
+.spec-table td:first-child {
+  font-family:'Cinzel',serif; font-size:0.48rem;
+  letter-spacing:0.18em; text-transform:uppercase;
+  color:var(--text-muted); width:38%;
+}
+
+/* Purchase block */
+.purchase-block {
+  border:1px solid var(--border); border-radius:3px;
+  padding:1.6rem; margin-bottom:2rem;
+  background:var(--bg-card);
+}
+.purchase-label {
+  font-family:'Cinzel',serif; font-size:0.5rem;
+  letter-spacing:0.22em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:1rem;
+}
+.print-option-picker,
+.size-picker { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.2rem; }
+.print-option-desc {
+  font-family:'Montserrat',sans-serif;
+  font-size:0.82rem;
+  line-height:1.7;
+  color:var(--text-muted);
+  margin:-0.55rem 0 1.1rem;
+}
+.limited-pill {
+  display:inline-block; margin:0 0 0.7rem;
+  font-family:'Cinzel',serif; font-size:0.5rem;
+  letter-spacing:0.18em; text-transform:uppercase;
+  background:var(--gold); color:#1a1a1a;
+  padding:0.3rem 0.65rem; border-radius:2px;
+}
+.editions-left {
+  font-family:'Cinzel',serif; font-size:0.58rem;
+  letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--gold); margin:0.2rem 0 0.9rem;
+}
+.editions-left.sold-out { color:var(--rust); }
+.size-chip {
+  font-family:'Montserrat',sans-serif; font-size:0.62rem;
+  letter-spacing:0.06em; font-weight:500;
+  padding:0.4rem 0.9rem;
+  border:1px solid var(--border); border-radius:2px;
+  color:var(--text-muted); background:transparent;
+  transition:border-color 0.15s, color 0.15s, background 0.15s;
+  cursor:pointer;
+}
+.size-chip:hover { border-color:var(--clay); color:var(--clay); }
+.size-chip.selected {
+  background:rgba(196,132,90,0.1);
+  border-color:var(--clay); color:var(--bark);
+}
+body.dark .size-chip.selected { color:var(--sand); }
+.size-chip:disabled { opacity:0.35; cursor:not-allowed; }
+
+.price-row {
+  display:flex; align-items:baseline; gap:0.8rem;
+  margin-bottom:1.4rem;
+}
+.price-ngn {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem; font-weight:400; color:var(--text);
+}
+.price-usd {
+  font-family:'Montserrat',sans-serif;
+  font-size:0.72rem; font-weight:500;
+  letter-spacing:0.06em; color:var(--text-muted);
+}
+
+.add-to-cart-btn {
+  width:100%;
+  font-family:'Cinzel',serif; font-size:0.62rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  padding:1rem; border:none; border-radius:2px;
+  background:var(--rust); color:var(--linen);
+  transition:background 0.2s, transform 0.15s;
+  margin-bottom:0.7rem;
+}
+.add-to-cart-btn:hover { background:var(--bark); transform:translateY(-1px); }
+.add-to-cart-btn:active { transform:translateY(0); }
+.add-to-cart-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+.shipping-note {
+  font-size:0.82rem; color:var(--text-muted);
+  display:flex; align-items:center; gap:0.4rem; line-height:1.5;
+}
+.shipping-note::before { content:'⊕'; color:var(--clay); }
+
+/* ── Cart drawer (ported from shop) ── */
+.cart-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(20,16,16,0.6);
+  backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.cart-overlay.open { opacity: 1; pointer-events: all; }
+.cart-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+  width: min(420px, 100vw);
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.cart-drawer.open { transform: translateX(0); }
+.cart-head {
+  padding: 1.4rem 1.6rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cart-head-title {
+  font-family: 'Cinzel', serif; font-size: 0.65rem;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+}
+.cart-close {
+  background: none; border: none; font-size: 1.2rem;
+  color: var(--text-muted); line-height: 1;
+  transition: color 0.2s;
+}
+.cart-close:hover { color: var(--rust); }
+.cart-items {
+  flex: 1; overflow-y: auto; padding: 1rem 1.6rem;
+}
+.cart-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 100%; gap: 1rem;
+  color: var(--text-muted);
+}
+.cart-empty-icon { font-size: 2.5rem; opacity: 0.3; }
+.cart-empty-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; font-style: italic;
+}
+.cart-item {
+  display: flex; gap: 1rem; padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.cart-item-img {
+  width: 64px; height: 64px; border-radius: 2px;
+  background: var(--bg-alt); overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: var(--clay); opacity: 0.5;
+}
+.cart-item-img img { width:100%; height:100%; object-fit:cover; }
+.cart-item-info { flex:1; min-width:0; }
+.cart-item-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem; color: var(--text); line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cart-item-variant {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem; color: var(--text-muted);
+  letter-spacing: 0.06em; margin: 0.2rem 0 0.5rem;
+}
+.cart-item-soldout {
+  display: block;
+  font-family: 'Cinzel', serif; font-size: 0.48rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--rust); margin: 0 0 0.5rem;
+}
+.cart-item-lowstock {
+  display: block;
+  font-family: 'Cinzel', serif; font-size: 0.48rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin: 0 0 0.5rem;
+}
+.cart-item-qty {
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.qty-btn {
+  background: var(--bg-alt); border: 1px solid var(--border);
+  width: 22px; height: 22px; border-radius: 2px;
+  font-size: 0.85rem; color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s;
+}
+.qty-btn:hover { border-color: var(--clay); }
+.qty-val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem; font-weight: 600; color: var(--text);
+  min-width: 16px; text-align: center;
+}
+.cart-item-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem; color: var(--text);
+  white-space: nowrap; text-align: right;
+}
+.cart-item-remove {
+  background: none; border: none; font-size: 0.75rem;
+  color: var(--text-muted); margin-top: 0.2rem;
+  transition: color 0.2s; display: block;
+}
+.cart-item-remove:hover { color: var(--rust); }
+
+.cart-foot {
+  padding: 1.4rem 1.6rem;
+  border-top: 1px solid var(--border);
+}
+.cart-totals {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  margin-bottom: 1.4rem;
+}
+.cart-total-row {
+  display: flex; justify-content: space-between;
+  font-size: 0.88rem; color: var(--text-muted);
+}
+.cart-total-row.grand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.22rem; color: var(--text);
+  padding-top: 0.6rem; border-top: 1px solid var(--border);
+}
+.checkout-btn {
+  width: 100%;
+  font-family: 'Cinzel', serif; font-size: 0.62rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 1rem;
+  background: var(--rust); color: var(--linen);
+  border: none; border-radius: 2px;
+  transition: background 0.2s;
+  margin-bottom: 0.8rem;
+}
+.checkout-btn:hover { background: var(--bark); }
+
+/* ── Cart drawer (minimal — links to shop.html for full cart) ── */
+.cart-toast {
+  position:fixed; bottom:2rem; left:50%;
+  transform:translateX(-50%) translateY(20px);
+  z-index:500; background:var(--bark); color:var(--sand);
+  font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.18em;
+  text-transform:uppercase; padding:0.85rem 2rem;
+  border-radius:2px; border:1px solid var(--clay);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s, transform 0.25s;
+  white-space:nowrap; display:flex; align-items:center; gap:1rem;
+}
+body.dark .cart-toast { background:#2a1c14; }
+.cart-toast.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:all; }
+.cart-toast-action {
+  background:none; border:1px solid rgba(196,132,90,0.5);
+  color:var(--clay); font-family:'Cinzel',serif;
+  font-size:0.48rem; letter-spacing:0.15em; text-transform:uppercase;
+  padding:0.35rem 0.8rem; border-radius:2px;
+  transition:border-color 0.15s, color 0.15s; cursor:pointer;
+}
+.cart-toast-action:hover { border-color:var(--clay); color:var(--sand); }
+
+/* ── Related prints ── */
+.related-section {
+  padding: 4rem clamp(1.2rem,4vw,3rem) 5rem;
+  border-top:1px solid var(--border);
+}
+.related-heading {
+  font-family:'Cinzel',serif; font-size:0.58rem;
+  letter-spacing:0.32em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:2rem;
+  display:flex; align-items:center; gap:1rem;
+}
+.related-heading::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg, var(--border), transparent);
+}
+.related-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+  gap:1.4rem;
+}
+.related-card {
+  border:1px solid var(--border); border-radius:3px; overflow:hidden;
+  background:var(--bg-card);
+  transition:border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  cursor:pointer;
+  display:block; color:inherit;
+}
+.related-card:hover {
+  border-color:var(--border-hover);
+  box-shadow:0 8px 40px rgba(74,50,40,0.14);
+  transform:translateY(-3px);
+}
+.related-card-img {
+  aspect-ratio:4/3; overflow:hidden; background:var(--bg-alt);
+  display:flex; align-items:center; justify-content:center;
+  font-size:2.5rem; color:var(--clay); opacity:0.3;
+}
+.related-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+.related-card:hover .related-card-img img { transform:scale(1.04); }
+.related-card-body { padding:1rem 1.1rem 1.2rem; }
+.related-card-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem; color:var(--text); margin-bottom:0.2rem;
+}
+.related-card-price {
+  font-family:'Cinzel',serif; font-size:0.5rem;
+  letter-spacing:0.15em; color:var(--text-muted);
+}
+
+/* ── 404 / error state ── */
+.error-state {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; min-height:70vh; text-align:center;
+  padding:2rem;
+}
+.error-state-icon { font-size:3rem; margin-bottom:1.2rem; opacity:0.4; }
+.error-state-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem; font-weight:300; color:var(--text); margin-bottom:0.6rem;
+}
+.error-state-sub { font-size:1rem; color:var(--text-muted); margin-bottom:2rem; }
+.back-btn {
+  font-family:'Cinzel',serif; font-size:0.58rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  padding:0.85rem 2rem;
+  border:1px solid var(--border); border-radius:2px;
+  color:var(--text-muted); background:none;
+  transition:border-color 0.2s, color 0.2s;
+}
+.back-btn:hover { border-color:var(--clay); color:var(--clay); }
+
+/* ── Footer ── */
+footer {
+  text-align:center; padding:2.5rem 2rem;
+  border-top:1px solid var(--border);
+  font-family:'Crimson Pro',serif; font-size:0.9rem; color:var(--text-muted);
+}
+footer a { color:var(--clay); transition:color 0.2s; }
+footer a:hover { color:var(--rust); }
+
+@media(max-width:600px) {
+  .nav-links { display:none; }
+  .related-grid { grid-template-columns:1fr 1fr; }
+}
+
+/* ── Checkout handoff loading overlay ── */.checkout-loading {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(14,10,8,0.78);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1.4rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+}
+.checkout-loading.show { opacity: 1; pointer-events: all; }
+.checkout-loading-ring {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 2px solid rgba(232,213,176,0.18);
+  border-top-color: var(--clay);
+  animation: ck-spin 0.8s linear infinite;
+}
+@keyframes ck-spin { to { transform: rotate(360deg); } }
+.checkout-loading-text {
+  font-family: 'Cinzel', serif; font-size: 0.56rem;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--sand);
+}
+.checkout-loading-bar {
+  width: min(220px, 60vw); height: 2px;
+  background: rgba(232,213,176,0.15); border-radius: 2px; overflow: hidden;
+}
+.checkout-loading-bar::after {
+  content: ''; display: block; height: 100%; width: 40%;
+  background: var(--clay); border-radius: 2px;
+  animation: ck-slide 1.1s ease-in-out infinite;
+}
+@keyframes ck-slide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* ── Share button + modal ── */
+.share-btn {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  margin: 0.4rem 0 0.2rem;
+  font-family: 'Cinzel', serif; font-size: 0.5rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-muted); background: none;
+  border: 1px solid var(--border); border-radius: 2px;
+  padding: 0.5rem 0.9rem; cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.share-btn:hover { border-color: var(--clay); color: var(--clay); }
+.share-btn svg { width: 13px; height: 13px; }
+.share-overlay {
+  position: fixed; inset: 0; z-index: 9100;
+  background: rgba(14,10,8,0.7);
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.share-overlay.show { opacity: 1; pointer-events: all; }
+.share-modal {
+  background: var(--bg-card, #fff); border: 1px solid var(--border);
+  border-radius: 4px; width: min(380px, 100%); padding: 1.8rem;
+  transform: translateY(16px); transition: transform 0.25s;
+  box-shadow: 0 18px 60px rgba(20,16,12,0.35);
+}
+.share-overlay.show .share-modal { transform: translateY(0); }
+.share-modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+.share-modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; color: var(--text); }
+.share-modal-close { background: none; border: none; font-size: 1rem; color: var(--text-muted); cursor: pointer; }
+.share-modal-close:hover { color: var(--rust); }
+.share-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.7rem; margin-bottom: 1.1rem; }
+.share-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  padding: 0.9rem 0.4rem; border: 1px solid var(--border); border-radius: 3px;
+  background: none; cursor: pointer; transition: border-color 0.18s, transform 0.18s;
+  font-family: 'Cinzel', serif; font-size: 0.46rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.share-opt:hover { border-color: var(--clay); transform: translateY(-2px); color: var(--text); }
+.share-opt svg { width: 22px; height: 22px; }
+.share-opt.facebook svg { color: #1877f2; }
+.share-opt.twitter svg  { color: var(--text); }
+.share-opt.whatsapp svg { color: #25d366; }
+.share-copy {
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.share-copy input {
+  flex: 1; min-width: 0; padding: 0.6rem 0.7rem;
+  border: 1px solid var(--border); border-radius: 2px;
+  background: var(--bg-alt); color: var(--text-muted);
+  font-family: 'Montserrat', sans-serif; font-size: 0.72rem;
+}
+.share-copy button {
+  padding: 0.6rem 0.9rem; border: 1px solid var(--clay); border-radius: 2px;
+  background: none; color: var(--clay); cursor: pointer;
+  font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase;
+  white-space: nowrap; transition: background 0.18s, color 0.18s;
+}
+.share-copy button:hover { background: var(--clay); color: var(--linen); }
+
+/* ── Enquiry widget (floating button + modal) ── */
+.enquire-fab {
+  position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 8000;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.7rem 1.1rem; border: none; border-radius: 999px;
+  background: var(--rust); color: var(--linen);
+  font-family: 'Cinzel', serif; font-size: 0.55rem;
+  letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer;
+  box-shadow: 0 6px 22px rgba(20,16,12,0.28);
+  transition: transform 0.18s, background 0.2s;
+}
+.enquire-fab:hover { background: var(--bark); transform: translateY(-2px); }
+.enquire-fab svg { width: 15px; height: 15px; }
+.enquire-overlay {
+  position: fixed; inset: 0; z-index: 8500;
+  background: rgba(14,10,8,0.7);
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.enquire-overlay.show { opacity: 1; pointer-events: all; }
+.enquire-modal {
+  background: var(--bg-card, #fff); border: 1px solid var(--border);
+  border-radius: 4px; width: min(440px, 100%); max-height: 92vh; overflow-y: auto;
+  padding: 1.8rem; transform: translateY(16px); transition: transform 0.25s;
+  box-shadow: 0 18px 60px rgba(20,16,12,0.35);
+}
+.enquire-overlay.show .enquire-modal { transform: translateY(0); }
+.enquire-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.4rem; }
+.enquire-title { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 300; color: var(--text); }
+.enquire-sub { font-family: 'Cinzel', serif; font-size: 0.48rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.2rem; }
+.enquire-close { background: none; border: none; font-size: 1rem; color: var(--text-muted); cursor: pointer; }
+.enquire-close:hover { color: var(--rust); }
+.enquire-wa {
+  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  width: 100%; padding: 0.85rem; margin-bottom: 1.1rem;
+  background: #25d366; color: #fff; border: none; border-radius: 3px;
+  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: pointer; transition: filter 0.18s;
+}
+.enquire-wa:hover { filter: brightness(0.93); }
+.enquire-wa svg { width: 18px; height: 18px; }
+.enquire-or { display: flex; align-items: center; gap: 0.7rem; margin: 0.4rem 0 1rem; color: var(--text-muted); font-family: 'Cinzel', serif; font-size: 0.46rem; letter-spacing: 0.2em; text-transform: uppercase; }
+.enquire-or::before, .enquire-or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.enquire-field { margin-bottom: 0.9rem; }
+.enquire-field label { display: block; font-family: 'Cinzel', serif; font-size: 0.48rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; }
+.enquire-field input, .enquire-field textarea {
+  width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--border); border-radius: 2px;
+  background: var(--bg-card, #fff); color: var(--text);
+  font-family: 'Crimson Pro', serif; font-size: 0.95rem;
+}
+.enquire-field textarea { resize: vertical; min-height: 90px; }
+.enquire-field input:focus, .enquire-field textarea:focus { border-color: var(--clay); outline: none; }
+.enquire-send {
+  width: 100%; padding: 0.85rem; border: none; border-radius: 2px;
+  background: var(--rust); color: var(--linen);
+  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s;
+}
+.enquire-send:hover { background: var(--bark); }
+.enquire-send:disabled { opacity: 0.5; cursor: not-allowed; }
+.enquire-done { text-align: center; padding: 1.5rem 0.5rem; }
+.enquire-done-icon { font-size: 2.4rem; color: var(--gold); margin-bottom: 0.8rem; }
+@media(max-width:600px){ .enquire-fab { font-size: 0.48rem; padding: 0.65rem 0.95rem; } }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav id="mainNav">
+  <a href="/" class="nav-logo"><span style="font-weight:600">KAY'S</span>&nbsp;<span style="font-weight:500">WORKS</span></a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/auction">Auction</a>
+      <a href="/shop">Shop</a>
+    </div>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">🌙</button>
+    <a href="/shop" class="nav-cart-link" id="navCartLink" title="View bag">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Bag <span class="cart-badge" id="cartBadge">0</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Main content — rendered by JS -->
+<div id="app">
+  <!-- Loading skeleton -->
+  <div id="loadingSkeleton" style="padding:calc(60px + 2rem) clamp(1.2rem,4vw,3rem) 0">
+    <div class="skeleton" style="width:120px;height:12px;margin-bottom:2rem"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:80vh">
+      <div class="skeleton" style="min-height:70vh"></div>
+      <div style="padding:3rem 2rem">
+        <div class="skeleton" style="width:60%;height:14px;margin-bottom:1rem"></div>
+        <div class="skeleton" style="width:80%;height:40px;margin-bottom:0.5rem"></div>
+        <div class="skeleton" style="width:40%;height:12px;margin-bottom:2rem"></div>
+        <div class="skeleton" style="height:100px;margin-bottom:1.5rem"></div>
+        <div class="skeleton" style="height:60px;margin-bottom:1.5rem"></div>
+        <div class="skeleton" style="height:180px"></div>
+      </div>
+    </div>
+  </div>
+  <div id="printContent" style="display:none"></div>
+  <div id="errorState" style="display:none" class="error-state">
+    <div class="error-state-icon">⊘</div>
+    <h2 class="error-state-title">Print not found</h2>
+    <p class="error-state-sub">This piece may have sold out or been removed.</p>
+    <a href="/shop" class="back-btn">Back to the shop</a>
+  </div>
+</div>
+
+<!-- Related prints -->
+<div id="relatedSection" style="display:none" class="related-section">
+  <h3 class="related-heading">From the same series</h3>
+  <div class="related-grid" id="relatedGrid"></div>
+</div>
+
+<!-- Cart drawer (opens in-page) -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <span class="cart-head-title">Your Bag</span>
+    <button class="cart-close" id="cartClose">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">&#x2715;&#xFE0E;</div>
+      <p class="cart-empty-text">Your bag is empty.</p>
+    </div>
+  </div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-totals" id="cartTotals"></div>
+    <button class="checkout-btn" id="checkoutBtn">Proceed to checkout</button>
+  </div>
+</aside>
+
+<!-- Cart toast -->
+<div class="cart-toast" id="cartToast">
+  <span id="cartToastMsg">Added to bag ✦</span>
+  <button class="cart-toast-action" onclick="openCart()">View bag</button>
+  <button class="cart-toast-action" onclick="hideToast()" style="border-color:transparent;color:var(--text-muted)">✕</button>
+</div>
+
+<!-- Checkout handoff loading overlay -->
+<div class="checkout-loading" id="checkoutLoading" role="status" aria-live="polite">
+  <div class="checkout-loading-ring"></div>
+  <div class="checkout-loading-bar"></div>
+  <div class="checkout-loading-text">Taking you to checkout…</div>
+</div>
+
+<!-- Share modal -->
+<div class="share-overlay" id="shareOverlay">
+  <div class="share-modal" role="dialog" aria-modal="true" aria-label="Share this print">
+    <div class="share-modal-head">
+      <span class="share-modal-title">Share this print</span>
+      <button class="share-modal-close" id="shareClose" aria-label="Close">✕</button>
+    </div>
+    <div class="share-options">
+      <button class="share-opt facebook" id="shareFacebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+        Facebook
+      </button>
+      <button class="share-opt twitter" id="shareTwitter">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Twitter
+      </button>
+      <button class="share-opt whatsapp" id="shareWhatsapp">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </button>
+    </div>
+    <div class="share-copy">
+      <input type="text" id="shareUrl" readonly aria-label="Product link"/>
+      <button id="shareCopyBtn">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Enquiry widget -->
+<button class="enquire-fab" id="enquireFab" aria-label="Ask a question">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  Questions?
+</button>
+<div class="enquire-overlay" id="enquireOverlay">
+  <div class="enquire-modal" role="dialog" aria-modal="true" aria-label="Ask a question">
+    <div class="enquire-head">
+      <div>
+        <div class="enquire-title" id="enquireTitle">Ask about this piece</div>
+        <div class="enquire-sub" id="enquireSub">We reply within 24 hours</div>
+      </div>
+      <button class="enquire-close" id="enquireClose" aria-label="Close">✕</button>
+    </div>
+    <div id="enquireBody">
+      <button class="enquire-wa" id="enquireWa">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Message us on WhatsApp
+      </button>
+      <div class="enquire-or">or send a message</div>
+      <div class="enquire-field"><label>Your name</label><input type="text" id="enquireName" placeholder="Name"/></div>
+      <div class="enquire-field"><label>Email</label><input type="email" id="enquireEmail" placeholder="your@email.com"/></div>
+      <div class="enquire-field"><label>Message</label><textarea id="enquireMsg" placeholder="What would you like to know about this piece?"></textarea></div>
+      <button class="enquire-send" id="enquireSend">Send message</button>
+    </div>
+    <div class="enquire-done" id="enquireDone" style="display:none">
+      <div class="enquire-done-icon">✦</div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--text);margin-bottom:0.5rem">Message sent.</p>
+      <p style="font-family:'Crimson Pro',serif;color:var(--text-muted);line-height:1.6">Thank you — we'll reply by email within 24 hours.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Kay's Works · <a href="mailto:oyeniyikayode4@gmail.com">oyeniyikayode4@gmail.com</a></p>
+</footer>
+
+<script>
+'use strict';
+
+/* ─── Helpers ─── */
+const slug = location.pathname.replace(/^\/shop\//, '').replace(/\/$/, '');
+function fmt(n)    { return '₦' + Number(n).toLocaleString('en-NG'); }
+function fmtUsd(n) { return '$' + Number(n).toFixed(0); }
+function shopHref(path = '') {
+  if (location.protocol === 'file:') {
+    const base = new URL('shop.html', location.href).href;
+    return path ? base + '#' + path.replace(/^\/+/, '') : base;
+  }
+  return '/shop' + (path ? '/' + path.replace(/^\/+/, '') : '');
+}
+function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+function printOptionKey(type, size) { return `${type}|${size}`; }
+function labelPrintOption(type, size) { return `${type} · ${size}`; }
+function escapeJs(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function escapeAttr(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function getPrintOptions(p) {
+  const variants = Array.isArray(p.variants) ? p.variants : [];
+  const available = p.available_variants || [];
+  const hasNested = variants.some(v => v && typeof v === 'object' && !Array.isArray(v));
+
+  if (hasNested) {
+    return variants.map(v => {
+      const type = String(v.type || v.print_type || v.name || v.label || 'Print').trim();
+      const sizes = (v.sizes || v.variants || []).map(String).filter(Boolean);
+      const availableSizes = (v.available_sizes || v.available || v.available_variants || sizes).map(String).filter(Boolean);
+      return { type, desc: v.desc || v.description || '', limited: v.limited === true, sizes, availableSizes: availableSizes.length ? availableSizes : sizes };
+    }).filter(o => o.type && o.sizes.length);
+  }
+
+  if (available && typeof available === 'object' && !Array.isArray(available)) {
+    return Object.entries(available).map(([type, sizes]) => ({
+      type,
+      desc: '',
+      sizes: (Array.isArray(sizes) ? sizes : []).map(String).filter(Boolean),
+      availableSizes: (Array.isArray(sizes) ? sizes : []).map(String).filter(Boolean),
+    })).filter(o => o.type && o.sizes.length);
+  }
+
+  const type = String(p.print_type || p.medium || 'Giclee').replace(/\s+print$/i, '').trim() || 'Print';
+  const sizes = variants.map(String).filter(Boolean);
+  const availableSizes = (Array.isArray(available) && available.length ? available : sizes).map(String).filter(Boolean);
+  return sizes.length ? [{ type, desc: p.description || p.desc || '', sizes, availableSizes }] : [];
+}
+
+function availablePrintChoices(p) {
+  return getPrintOptions(p).flatMap(o =>
+    (o.availableSizes.length ? o.availableSizes : o.sizes).map(size => ({
+      type: o.type,
+      size,
+      key: printOptionKey(o.type, size),
+      label: labelPrintOption(o.type, size),
+    }))
+  );
+}
+
+// Normalize image URLs. Bare relative paths like "images/skull.png" resolve
+// differently on /shop vs /shop/[slug]; force a site-root path so they work
+// everywhere. Leaves absolute URLs (http/https/data/protocol-relative) and
+// already-rooted "/…" paths untouched.
+function normalizeImg(u) {
+  const s = String(u || '').trim();
+  if (!s) return '';
+  if (/^(https?:)?\/\//i.test(s) || s.startsWith('data:') || s.startsWith('/')) return s;
+  return '/' + s.replace(/^\.?\/*/, '');
+}
+
+function printPrice(p, key, currency) {
+  const prices = currency === 'usd' ? (p.prices_usd || {}) : (p.prices_ngn || {});
+  if (prices[key] !== undefined) return prices[key];
+  const size = String(key).split('|').pop();
+  return prices[size] || 0;
+}
+
+// Limited-edition helpers. A size is "tracked" if it has a run total set.
+function editionTotal(p, key) {
+  const t = (p.edition_totals || {})[key];
+  return t === undefined ? null : Number(t);
+}
+function editionRemaining(p, key) {
+  const sbv = p.stock_by_variant || {};
+  return sbv[key] === undefined ? null : Number(sbv[key]);
+}
+function isLimitedKey(p, key) {
+  // Limited if the option for this key is flagged limited AND a run total exists.
+  const type = String(key).split('|')[0];
+  const opt = getPrintOptions(p).find(o => o.type === type);
+  return !!(opt && opt.limited) && editionTotal(p, key) !== null;
+}
+function editionLabel(p, key) {
+  if (!isLimitedKey(p, key)) return '';
+  const remaining = editionRemaining(p, key);
+  const total = editionTotal(p, key);
+  if (remaining === null || total === null) return '';
+  if (remaining <= 0) return 'Sold out';
+  return `${remaining} of ${total} editions left`;
+}
+
+// Build the specification rows for a given selected print option. The
+// option's own description carries the option-specific detail (paper, finish,
+// etc.), so it replaces the old hardcoded Paper/Ink/Border/Finish rows.
+function buildSpecRows(p, selectedType) {
+  const opts = getPrintOptions(p);
+  const opt = opts.find(o => o.type === selectedType) || opts[0];
+  const rows = [];
+  if (opt && opt.type) rows.push(['Print type', opt.type]);
+  if (opt) rows.push(['Edition', opt.limited ? 'Limited edition' : 'Open edition']);
+  if (p.medium) rows.push(['Medium', p.medium]);
+  rows.push(['Packaging', p.is_large_print ? 'Rolled in protective archival tube' : 'Flat-packed in rigid board mailer']);
+  rows.push(['Signed', p.signed ? 'Yes, hand signed by Kay' : 'Open edition']);
+  return rows
+    .filter(r => r[1])
+    .map(([k, v]) => `<tr><td>${k}</td><td>${escapeAttrText(v)}</td></tr>`)
+    .join('');
+}
+
+// Plain text escape for table cell content.
+function escapeAttrText(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* ─── Theme ─── */
+function initTheme() {
+  const saved = localStorage.getItem('kaysworks-theme');
+  const dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('themeBtn').textContent = dark ? 'Light' : 'Dark';
+}
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('kaysworks-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = isDark ? 'Light' : 'Dark';
+});
+initTheme();
+
+/* ─── Nav scroll ─── */
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
+}, { passive:true });
+
+/* ─── Toast ─── */
+let _toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('cartToast');
+  document.getElementById('cartToastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+function hideToast() { document.getElementById('cartToast').classList.remove('show'); }
+
+/* ─── Cart (shared localStorage key with shop.html) ─── */
+function getCart() {
+  try { return JSON.parse(localStorage.getItem('kaysworks-cart') || '[]'); } catch { return []; }
+}
+function saveCart(cart) { localStorage.setItem('kaysworks-cart', JSON.stringify(cart)); }
+function cartCount() {
+  return getCart().reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+}
+function updateCartBadge() {
+  const badge = document.getElementById('cartBadge');
+  if (!badge) return;
+  const count = cartCount();
+  badge.textContent = count;
+  badge.classList.toggle('visible', count > 0);
+}
+function goToShop() {
+  window.location.href = shopHref();
+}
+
+// ── Stock accounting (mirrors shop.html) ───────────────────────────────────
+// Total units available for a variant key. null === unlimited / untracked.
+// For prints this is the limited-edition remaining count; for merch it's the
+// per-variant or overall stock.
+function variantStock(product, variantKey) {
+  if (product && product.category && product.category !== 'prints') {
+    const s = merchStock(product, variantKey);
+    return s === null || s === undefined ? null : Number(s);
+  }
+  // Prints: only limited editions are capped. Open editions are unlimited.
+  if (!isLimitedKey(product, variantKey)) return null;
+  const r = editionRemaining(product, variantKey);
+  return r === null ? null : Number(r);
+}
+function qtyInCart(productId, variantKey) {
+  const it = getCart().find(c => c.key === productId + '-' + variantKey);
+  return it ? it.qty : 0;
+}
+// Units still addable right now: cap minus what's already in the bag.
+function remainingToAdd(product, variantKey) {
+  const cap = variantStock(product, variantKey);
+  if (cap === null) return null;
+  return Math.max(0, cap - qtyInCart(product.id, variantKey));
+}
+
+function addToCart(product, variantKey, variantLabel) {
+  const left = remainingToAdd(product, variantKey);
+  if (left !== null && left <= 0) {
+    const cap = variantStock(product, variantKey);
+    showToast(cap === 0 ? 'Sold out ✦' : 'That\u2019s the whole edition — sold out ✦');
+    return;
+  }
+
+  const cart = getCart();
+  const key = product.id + '-' + variantKey;
+  const existing = cart.find(c => c.key === key);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({
+      key, id: product.id,
+      name: product.name,
+      variant: variantLabel || variantKey,
+      variantKey,
+      priceNgn: printPrice(product, variantKey, 'ngn'),
+      priceUsd: printPrice(product, variantKey, 'usd'),
+      emoji: product.emoji || '🖼',
+      image: normalizeImg(product.image_url || ''),
+      qty: 1,
+    });
+  }
+  saveCart(cart);
+  updateCartBadge();
+  updateCartUI();
+  openCart();
+  // Re-check what's left after this add so we can twist the knife if it's the last.
+  const after = remainingToAdd(product, variantKey);
+  showToast(after === 0
+    ? 'Added — last one, now sold out ✦'
+    : `${product.name} · ${variantLabel || variantKey} added to bag ✦`);
+}
+
+/* ─── Cart drawer ─── */
+function openCart() {
+  updateCartUI();
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('cartOverlay').classList.add('open');
+}
+function closeCart() {
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('cartOverlay').classList.remove('open');
+}
+
+function cartDomKey(key) { return encodeURIComponent(key); }
+function cartKeyFromButton(btn) {
+  try { return decodeURIComponent(btn.dataset.key || ''); }
+  catch (_) { return btn.dataset.key || ''; }
+}
+
+// The bag here knows the price/qty for every line, but only knows live stock
+// for the product currently on the page (_product). For other lines we can
+// still cap using whatever stock snapshot was stored, falling back to no cap.
+function lineRemainingToAdd(c) {
+  if (_product && _product.id === c.id) return remainingToAdd(_product, c.variantKey);
+  return null; // unknown stock for off-page items — don't block
+}
+
+function changeCartQty(key, dir) {
+  const cart = getCart();
+  const item = cart.find(c => c.key === key);
+  if (!item) return;
+  const step = Number(dir);
+  if (step > 0) {
+    const left = lineRemainingToAdd(item);
+    if (left !== null && left <= 0) {
+      showToast('That\u2019s the whole edition — sold out ✦');
+      return;
+    }
+  }
+  item.qty += step;
+  if (item.qty <= 0) cart.splice(cart.indexOf(item), 1);
+  saveCart(cart);
+  updateCartBadge();
+  updateCartUI();
+  // Keep the on-page purchase block in sync if we changed the current product.
+  if (_product && item.id === _product.id) refreshPurchaseControl();
+}
+
+function removeFromCart(key) {
+  const cart = getCart().filter(c => c.key !== key);
+  saveCart(cart);
+  updateCartBadge();
+  updateCartUI();
+  refreshPurchaseControl();
+}
+
+// Re-sync whichever purchase control is on the page (print vs merch) so its
+// button/stock state reflects the current cart.
+function refreshPurchaseControl() {
+  if (!_product || !_selectedVariant) return;
+  if (_product.category && _product.category !== 'prints') {
+    selectMerchVariant(_selectedVariant);
+  } else {
+    updateEditionState(_selectedVariant);
+  }
+}
+
+function updateCartUI() {
+  const itemsEl = document.getElementById('cartItems');
+  const footEl = document.getElementById('cartFoot');
+  if (!itemsEl || !footEl) return;
+  const cart = getCart();
+
+  if (!cart.length) {
+    itemsEl.innerHTML = `<div class="cart-empty">
+      <div class="cart-empty-icon">&#x2715;&#xFE0E;</div>
+      <p class="cart-empty-text">Your bag is empty.</p>
+    </div>`;
+    footEl.style.display = 'none';
+    return;
+  }
+  footEl.style.display = '';
+
+  itemsEl.innerHTML = cart.map(c => {
+    const left = lineRemainingToAdd(c); // null = unknown/unlimited
+    const maxed = left !== null && left <= 0;
+    const note = maxed
+      ? `<span class="cart-item-soldout">Sold out — last ${c.qty} reserved for you</span>`
+      : (left !== null && left <= 3 ? `<span class="cart-item-lowstock">Only ${left} more available</span>` : '');
+    return `
+    <div class="cart-item">
+      <div class="cart-item-img">
+        ${c.image ? `<img src="${c.image}" alt="${escapeAttr(c.name)}" onerror="this.replaceWith(document.createTextNode('${(c.emoji || '🖼').replace(/'/g,'')}'))"/>` : (c.emoji || '🖼')}
+      </div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${c.name}</div>
+        <div class="cart-item-variant">${c.variant}</div>
+        ${note}
+        <div class="cart-item-qty">
+          <button class="qty-btn" data-key="${cartDomKey(c.key)}" data-dir="-1">−</button>
+          <span class="qty-val">${c.qty}</span>
+          <button class="qty-btn" data-key="${cartDomKey(c.key)}" data-dir="1"${maxed ? ' disabled style="opacity:0.35;cursor:not-allowed"' : ''}>+</button>
+          <button class="cart-item-remove" data-key="${cartDomKey(c.key)}">Remove</button>
+        </div>
+      </div>
+      <div>
+        <div class="cart-item-price">${fmt(c.priceNgn * c.qty)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const ngnTotal = cart.reduce((a, c) => a + (c.priceNgn || 0) * c.qty, 0);
+  document.getElementById('cartTotals').innerHTML = `
+    <div class="cart-total-row"><span>Subtotal</span><span>${fmt(ngnTotal)}</span></div>
+    <div class="cart-total-row"><span>Delivery</span><span><span style="color:#6b7c5c">TBD at checkout</span></span></div>
+    <div class="cart-total-row grand"><span>Est. Total</span><span>${fmt(ngnTotal)} <span style="font-size:0.75rem;color:var(--text-muted)">+ delivery</span></span></div>`;
+
+  itemsEl.querySelectorAll('.qty-btn').forEach(b => {
+    b.addEventListener('click', () => changeCartQty(cartKeyFromButton(b), b.dataset.dir));
+  });
+  itemsEl.querySelectorAll('.cart-item-remove').forEach(b => {
+    b.addEventListener('click', () => removeFromCart(cartKeyFromButton(b)));
+  });
+}
+
+/* ─── Image zoom on mousemove ─── */
+function initZoom(wrap) {
+  const img = wrap.querySelector('img');
+  if (!img) return;
+  let zoomed = false;
+  wrap.addEventListener('mouseenter', () => { zoomed = true; img.style.transform = 'scale(2)'; });
+  wrap.addEventListener('mouseleave', () => { zoomed = false; img.style.transform = 'scale(1)'; img.style.transformOrigin = 'center center'; });
+  wrap.addEventListener('mousemove', e => {
+    if (!zoomed) return;
+    const r = wrap.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width  * 100).toFixed(2);
+    const y = ((e.clientY - r.top)  / r.height * 100).toFixed(2);
+    img.style.transformOrigin = `${x}% ${y}%`;
+  });
+}
+
+/* ─── Render product ─── */
+let _product = null;
+let _selectedPrintType = '';
+let _selectedVariant = '';
+
+function detailTags(p) {
+  const tags = [];
+  if (p.is_bestseller) tags.push('<span class="detail-tag detail-tag-best">Best Seller</span>');
+  if (p.is_new) tags.push('<span class="detail-tag detail-tag-new">New</span>');
+  return tags.length ? `<div class="detail-tags">${tags.join('')}</div>` : '';
+}
+
+function renderProduct(p) {
+  _product = p;
+
+  // Non-print products use a simpler variant/price selector.
+  if (p.category && p.category !== 'prints') {
+    renderMerchProduct(p);
+    return;
+  }
+
+  const printOptions = getPrintOptions(p);
+  _selectedPrintType = printOptions[0]?.type || '';
+  const availSizes = printOptions[0]?.availableSizes || [];
+  _selectedVariant = availSizes[0] ? printOptionKey(_selectedPrintType, availSizes[0]) : '';
+
+  // Update page meta
+  document.title = `${p.name} · Kay's Works`;
+  updateMeta(p);
+
+  // Build breadcrumb
+  const seriesSlug = p.series_slug || '';
+  const seriesName = p.series_name || 'Prints';
+  const breadcrumb = `
+    <div class="breadcrumb">
+      <a href="/shop">Shop</a>
+      <span class="breadcrumb-sep">·</span>
+      ${seriesSlug ? `<a href="/shop/series/${seriesSlug}">${seriesName}</a><span class="breadcrumb-sep">·</span>` : ''}
+      <span style="color:var(--text)">${p.name}</span>
+    </div>`;
+
+  // Build the gallery: the main product image (image_url) is always the
+  // primary/hero; any images[] entries are additional views appended after it.
+  const extra = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+  const images = [...(p.image_url ? [p.image_url] : []), ...extra]
+    .map(normalizeImg)
+    .filter((v, i, a) => v && a.indexOf(v) === i);
+  const thumbsHtml = images.length > 1
+    ? `<div class="thumb-strip">${images.map((img,i) => `
+        <div class="thumb${i===0?' active':''}" data-idx="${i}" onclick="switchImage(${i})">
+          <img src="${img}" alt="View ${i+1}" loading="lazy"/>
+        </div>`).join('')}</div>`
+    : '';
+
+  const mainImg = images[0]
+    ? `<img id="heroImg" src="${images[0]}" alt="${p.name}"/>`
+    : `<div class="hero-img-placeholder">🖼</div>`;
+
+  const optionChips = printOptions.map((opt, i) => `
+    <button class="size-chip${i===0?' selected':''}" data-type="${escapeAttr(opt.type)}">${opt.type}</button>
+  `).join('');
+
+  const sizeChips = availSizes.map(size => {
+    const key = printOptionKey(_selectedPrintType, size);
+    return `<button class="size-chip${key===_selectedVariant?' selected':''}" data-v="${escapeAttr(key)}">${size}</button>`;
+  }).join('');
+
+  // Initial prices
+  const ngn = printPrice(p, _selectedVariant, 'ngn');
+  const usd = printPrice(p, _selectedVariant, 'usd');
+
+  // Spec rows — option-specific detail comes from the selected print option's
+  // own description; only genuinely product-level facts are shown statically.
+  const specRowsHtml = buildSpecRows(p, _selectedPrintType);
+
+  // Story paragraphs
+  const storyHtml = (p.story || 'This piece is part of Kay\'s ongoing exploration of form, light and memory. Each print is made with care and carries a piece of the original work\'s intention.')
+    .split('\n').filter(Boolean)
+    .map(line => `<p>${line}</p>`).join('');
+
+  // Process notes
+  const processHtml = p.process
+    ? p.process.split('\n').filter(Boolean).map(l => `<p>${l}</p>`).join('')
+    : '<p>Every print begins as an original digital painting — the same file, without compression or resizing, sent directly to the printer. Kay reviews a proof before any edition ships.</p>';
+
+  const html = `
+    ${breadcrumb}
+    <div class="print-layout">
+      <div class="image-panel">
+        <div class="hero-img-wrap" id="heroWrap">
+          ${mainImg}
+          <span class="zoom-hint">Hover to zoom</span>
+          ${thumbsHtml}
+        </div>
+      </div>
+
+      <div class="info-panel">
+        ${seriesSlug ? `<a href="/shop/series/${seriesSlug}" class="print-series-link">${seriesName}</a>` : ''}
+
+        <h1 class="print-title">${p.name}</h1>
+        ${detailTags(p)}
+        <p class="print-year">${p.year || '2025'} · Fine art print</p>
+        <button class="share-btn" onclick="openShare()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share this print
+        </button>
+
+        ${p.quote ? `
+        <blockquote class="print-quote">
+          "${p.quote}"
+          <cite>— Kay</cite>
+        </blockquote>` : ''}
+
+        <div class="section-divider"><span>The work</span></div>
+        <div class="print-story">${storyHtml}</div>
+
+        <div class="section-divider"><span>Process</span></div>
+        <div class="print-process">${processHtml}</div>
+
+        <div class="section-divider"><span>Print specifications</span></div>
+        <table class="spec-table" id="specTable">${specRowsHtml}</table>
+
+        <div class="purchase-block">
+          <p class="purchase-label">Choose your print option</p>
+          <div class="print-option-picker">${optionChips}</div>
+          <p class="limited-pill" id="limitedPill" style="display:${printOptions[0]?.limited ? 'inline-block' : 'none'}">Limited edition</p>
+          <p class="print-option-desc" id="printOptionDesc">${printOptions[0]?.desc || ''}</p>
+          <p class="purchase-label">Choose your size</p>
+          <div class="size-picker">${sizeChips}</div>
+          <p class="editions-left" id="editionsLeft" style="display:${editionLabel(p, _selectedVariant) ? 'block' : 'none'}">${editionLabel(p, _selectedVariant)}</p>
+          <div class="price-row">
+            <span class="price-ngn" id="priceNgn">${fmt(ngn)}</span>
+            <span class="price-usd" id="priceUsd">${fmtUsd(usd)} USD</span>
+          </div>
+          ${(() => {
+            const soldOut = isLimitedKey(p, _selectedVariant) && (editionRemaining(p, _selectedVariant) ?? 0) <= 0;
+            const disabled = !_selectedVariant || soldOut;
+            const label = soldOut ? 'Sold out' : (_selectedVariant ? 'Add to bag' : 'Unavailable');
+            return `<button class="add-to-cart-btn" id="addBtn" onclick="handleAddToCart()" ${disabled ? 'disabled' : ''}>${label}</button>`;
+          })()}
+          <p class="shipping-note">
+            Ships from Nigeria via GIG Logistics (domestic) or DHL / UPS (international).
+            ${p.is_large_print ? ' This piece ships rolled in an archival tube.' : ' Ships flat in a rigid board mailer.'}
+          </p>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('printContent').innerHTML = html;
+  document.getElementById('loadingSkeleton').style.display = 'none';
+  document.getElementById('printContent').style.display = '';
+
+  // Init zoom
+  const wrap = document.getElementById('heroWrap');
+  if (wrap) initZoom(wrap);
+}
+
+/* ─── Render merch / notebook / sticker product ─── */
+function merchVariants(p) {
+  const v = Array.isArray(p.variants) ? p.variants : [];
+  // Merch variants are plain strings; guard against print-style objects.
+  const labels = v.map(x => (typeof x === 'string' ? x : (x && x.type) || '')).filter(Boolean);
+  return labels.length ? labels : ['One size'];
+}
+
+function merchStock(p, label) {
+  const sbv = p.stock_by_variant || {};
+  if (sbv[label] !== undefined) return Number(sbv[label]);
+  if (p.stock !== undefined && p.stock !== null) return Number(p.stock);
+  return null;
+}
+
+function renderMerchProduct(p) {
+  const variants = merchVariants(p);
+  _selectedVariant = variants[0] || '';
+
+  document.title = `${p.name} · Kay's Works`;
+  updateMeta(p);
+
+  const catLabel = p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : 'Shop';
+  const breadcrumb = `
+    <div class="breadcrumb">
+      <a href="/shop">Shop</a>
+      <span class="breadcrumb-sep">·</span>
+      <span style="color:var(--text)">${p.name}</span>
+    </div>`;
+
+  const extra = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+  const images = [...(p.image_url ? [p.image_url] : []), ...extra]
+    .map(normalizeImg)
+    .filter((v, i, a) => v && a.indexOf(v) === i);
+  const thumbsHtml = images.length > 1
+    ? `<div class="thumb-strip">${images.map((img,i) => `
+        <div class="thumb${i===0?' active':''}" data-idx="${i}" onclick="switchImage(${i})">
+          <img src="${img}" alt="View ${i+1}" loading="lazy"/>
+        </div>`).join('')}</div>`
+    : '';
+  const mainImg = images[0]
+    ? `<img id="heroImg" src="${images[0]}" alt="${p.name}"/>`
+    : `<div class="hero-img-placeholder">${p.emoji || '✦'}</div>`;
+
+  const variantChips = variants.map((label, i) => `
+    <button class="size-chip${i===0?' selected':''}" data-v="${escapeAttr(label)}">${label}</button>
+  `).join('');
+
+  const ngn = printPrice(p, _selectedVariant, 'ngn');
+  const usd = printPrice(p, _selectedVariant, 'usd');
+  const stock = merchStock(p, _selectedVariant);
+  const soldOut = stock === 0;
+
+  const storyHtml = (p.story || p.desc || p.description || '')
+    .split('\n').filter(Boolean).map(line => `<p>${line}</p>`).join('');
+
+  const specPairs = [
+    ['Type', p.clothing_type || ''],
+    ['Medium', p.medium || ''],
+  ].filter(r => r[1]);
+  const specRows = specPairs.map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+
+  const html = `
+    ${breadcrumb}
+    <div class="print-layout">
+      <div class="image-panel">
+        <div class="hero-img-wrap" id="heroWrap">
+          ${mainImg}
+          <span class="zoom-hint">Hover to zoom</span>
+          ${thumbsHtml}
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <h1 class="print-title">${p.name}</h1>
+        ${detailTags(p)}
+        <p class="print-year">${catLabel}</p>
+        <button class="share-btn" onclick="openShare()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share this product
+        </button>
+
+        ${storyHtml ? `<div class="section-divider"><span>About</span></div><div class="print-story">${storyHtml}</div>` : ''}
+
+        ${specRows ? `<div class="section-divider"><span>Details</span></div><table class="spec-table">${specRows}</table>` : ''}
+
+        <div class="purchase-block">
+          <p class="purchase-label">Choose an option</p>
+          <div class="size-picker">${variantChips}</div>
+          <div class="price-row">
+            <span class="price-ngn" id="priceNgn">${fmt(ngn)}</span>
+            <span class="price-usd" id="priceUsd">${fmtUsd(usd)} USD</span>
+            <span id="merchStock" style="font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;margin-left:0.6rem;color:${soldOut?'var(--rust)':'var(--gold)'}">${soldOut?'Sold out':(stock!==null&&stock<=3?`Only ${stock} left`:'')}</span>
+          </div>
+          <button class="add-to-cart-btn" id="addBtn" onclick="handleMerchAddToCart()" ${(!_selectedVariant||soldOut)?'disabled':''}>${soldOut?'Sold out':(_selectedVariant?'Add to bag':'Unavailable')}</button>
+          <p class="shipping-note">Ships from Nigeria via GIG Logistics (domestic) or DHL / UPS (international).</p>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('printContent').innerHTML = html;
+  document.getElementById('loadingSkeleton').style.display = 'none';
+  document.getElementById('printContent').style.display = '';
+
+  const wrap = document.getElementById('heroWrap');
+  if (wrap) initZoom(wrap);
+}
+
+function selectMerchVariant(label) {
+  _selectedVariant = label;
+  document.querySelectorAll('.size-picker .size-chip').forEach(c =>
+    c.classList.toggle('selected', c.dataset.v === label));
+  const ngn = printPrice(_product, label, 'ngn');
+  const usd = printPrice(_product, label, 'usd');
+  document.getElementById('priceNgn').textContent = fmt(ngn);
+  document.getElementById('priceUsd').textContent = fmtUsd(usd) + ' USD';
+  const stock = merchStock(_product, label);
+  const soldOut = stock === 0;
+  const left = remainingToAdd(_product, label); // cart-aware
+  const maxedByCart = left !== null && left <= 0;
+  const stockEl = document.getElementById('merchStock');
+  if (stockEl) {
+    stockEl.textContent = soldOut ? 'Sold out' : (stock !== null && stock <= 3 ? `Only ${stock} left` : '');
+    stockEl.style.color = soldOut ? 'var(--rust)' : 'var(--gold)';
+  }
+  const btn = document.getElementById('addBtn');
+  if (btn) {
+    btn.disabled = !label || soldOut || maxedByCart;
+    btn.textContent = soldOut ? 'Sold out'
+      : (maxedByCart ? 'All in your bag'
+        : (label ? 'Add to bag' : 'Unavailable'));
+  }
+}
+
+function handleMerchAddToCart() {
+  if (!_selectedVariant) { showToast('Please choose an option'); return; }
+  addToCart(_product, _selectedVariant, _selectedVariant);
+  selectMerchVariant(_selectedVariant);
+}
+
+function updateMeta(p) {
+  const desc = (p.story || p.description || p.desc || '').replace(/<[^>]*>/g,'').slice(0,160);
+  const rawImg = normalizeImg(p.image_url || '');
+  const img  = rawImg && rawImg.startsWith('/') ? `https://www.kaysworks.com${rawImg}` : rawImg;
+  const url  = `https://www.kaysworks.com/shop/${p.slug || slugify(p.name)}`;
+
+  const set = (sel, attr, val) => { const el = document.querySelector(sel); if(el) el.setAttribute(attr, val); };
+  const setContent = (sel, val) => { const el = document.querySelector(sel); if(el) el.setAttribute('content', val); };
+
+  // Create or update meta tags
+  function meta(property, content, isName) {
+    const attr = isName ? 'name' : 'property';
+    let el = document.querySelector(`meta[${attr}="${property}"]`);
+    if (!el) { el = document.createElement('meta'); el.setAttribute(attr, property); document.head.appendChild(el); }
+    el.setAttribute('content', content);
+  }
+
+  document.title = `${p.name} · Kay's Works`;
+  meta('description', desc, true);
+  meta('og:title', `${p.name} · Kay's Works`);
+  meta('og:description', desc);
+  meta('og:image', img);
+  meta('og:url', url);
+  meta('og:type', 'product');
+  meta('twitter:card', 'summary_large_image');
+  meta('twitter:title', `${p.name} · Kay's Works`);
+  meta('twitter:image', img);
+
+  // Canonical
+  let canon = document.querySelector('link[rel="canonical"]');
+  if (!canon) { canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon); }
+  canon.href = url;
+
+  // JSON-LD structured data for Google Shopping
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.name,
+    image: img,
+    description: desc,
+    brand: { '@type': 'Brand', name: "Kay's Works" },
+    offers: availablePrintChoices(p).map(choice => ({
+      '@type': 'Offer',
+      name: choice.label,
+      price: printPrice(p, choice.key, 'ngn'),
+      priceCurrency: 'NGN',
+      availability: 'https://schema.org/InStock',
+      url,
+    })),
+  };
+  let ld = document.getElementById('jsonLd');
+  if (!ld) { ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.id = 'jsonLd'; document.head.appendChild(ld); }
+  ld.textContent = JSON.stringify(jsonLd);
+}
+
+function selectSize(v) {
+  _selectedVariant = v;
+  document.querySelectorAll('.size-picker .size-chip').forEach(c => c.classList.toggle('selected', c.dataset.v === v));
+  const ngn = printPrice(_product, v, 'ngn');
+  const usd = printPrice(_product, v, 'usd');
+  document.getElementById('priceNgn').textContent = fmt(ngn);
+  document.getElementById('priceUsd').textContent = fmtUsd(usd) + ' USD';
+  updateEditionState(v);
+}
+
+// Reflect limited-edition remaining count and sold-out state for a variant key.
+function updateEditionState(v) {
+  const label = editionLabel(_product, v);
+  const el = document.getElementById('editionsLeft');
+  if (el) {
+    el.textContent = label;
+    el.style.display = label ? 'block' : 'none';
+    el.classList.toggle('sold-out', label === 'Sold out');
+  }
+  const soldOut = isLimitedKey(_product, v) && (editionRemaining(_product, v) ?? 0) <= 0;
+  // Also lock the button once the buyer already holds the whole edition.
+  const left = remainingToAdd(_product, v);
+  const maxedByCart = left !== null && left <= 0;
+  const btn = document.getElementById('addBtn');
+  if (btn) {
+    btn.disabled = !v || soldOut || maxedByCart;
+    btn.textContent = soldOut ? 'Sold out'
+      : (maxedByCart ? 'All in your bag'
+        : (v ? 'Add to bag' : 'Unavailable'));
+  }
+}
+
+function selectPrintType(type) {
+  _selectedPrintType = type;
+  const opt = getPrintOptions(_product).find(o => o.type === type);
+  const sizes = opt?.availableSizes || [];
+  const firstKey = sizes[0] ? printOptionKey(type, sizes[0]) : '';
+  document.querySelectorAll('.print-option-picker .size-chip')
+    .forEach(c => c.classList.toggle('selected', c.dataset.type === type));
+  document.querySelector('.size-picker').innerHTML = sizes.map(size => {
+    const key = printOptionKey(type, size);
+    return `<button class="size-chip${key===firstKey?' selected':''}" data-v="${escapeAttr(key)}">${size}</button>`;
+  }).join('');
+  const addBtn = document.getElementById('addBtn');
+  const descEl = document.getElementById('printOptionDesc');
+  if (descEl) descEl.textContent = opt?.desc || '';
+  const pill = document.getElementById('limitedPill');
+  if (pill) pill.style.display = opt?.limited ? 'inline-block' : 'none';
+  const specTable = document.getElementById('specTable');
+  if (specTable) specTable.innerHTML = buildSpecRows(_product, type);
+  addBtn.disabled = !firstKey;
+  addBtn.textContent = firstKey ? 'Add to bag' : 'Unavailable';
+  if (firstKey) selectSize(firstKey);
+}
+
+function handleAddToCart() {
+  if (!_selectedVariant) { showToast('Please select a size'); return; }
+  const choice = availablePrintChoices(_product).find(c => c.key === _selectedVariant);
+  addToCart(_product, _selectedVariant, choice?.label || _selectedVariant);
+  updateEditionState(_selectedVariant);
+}
+
+function switchImage(idx) {
+  const extra = Array.isArray(_product.images) ? _product.images.filter(Boolean) : [];
+  const images = [...(_product.image_url ? [_product.image_url] : []), ...extra]
+    .map(normalizeImg)
+    .filter((v, i, a) => v && a.indexOf(v) === i);
+  const heroImg = document.getElementById('heroImg');
+  if (heroImg && images[idx]) heroImg.src = images[idx];
+  document.querySelectorAll('.thumb').forEach(t => t.classList.toggle('active', Number(t.dataset.idx) === idx));
+}
+
+/* ─── Render related prints ─── */
+function renderRelated(prints) {
+  if (!prints || !prints.length) return;
+  const filtered = prints.filter(p => p.slug !== slug).slice(0, 4);
+  if (!filtered.length) return;
+
+  document.getElementById('relatedSection').style.display = '';
+  document.getElementById('relatedGrid').innerHTML = filtered.map(p => {
+    let lowestPrice, firstAvail;
+    if (p.category && p.category !== 'prints') {
+      const labels = merchVariants(p);
+      const prices = labels.map(l => printPrice(p, l, 'ngn')).filter(Boolean);
+      lowestPrice = prices.length ? Math.min(...prices) : 0;
+      firstAvail  = labels[0] || '';
+    } else {
+      const choices = availablePrintChoices(p);
+      const prices  = choices.map(c => printPrice(p, c.key, 'ngn')).filter(Boolean);
+      lowestPrice = prices.length ? Math.min(...prices) : 0;
+      firstAvail  = choices[0]?.label || '';
+    }
+    return `
+      <a href="/shop/${p.slug || slugify(p.name)}" class="related-card">
+        <div class="related-card-img">
+          ${p.image_url ? `<img src="${normalizeImg(p.image_url)}" alt="${p.name}" loading="lazy"/>` : (p.emoji || '✦')}
+        </div>
+        <div class="related-card-body">
+          <div class="related-card-title">${p.name}</div>
+          <div class="related-card-price">From ${fmt(lowestPrice)} · ${firstAvail}</div>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+/* ─── Load product ─── */
+async function load() {
+  if (!slug) { showError(); return; }
+  try {
+    const res = await fetch(`/api/shop/products?slug=${encodeURIComponent(slug)}`);
+    if (!res.ok) { showError(); return; }
+    const product = await res.json();
+    renderProduct(product);
+
+    // Load related (same series or same category)
+    const seriesSlug = product.series_slug || '';
+    if (seriesSlug) {
+      fetch(`/api/shop/products?series=${encodeURIComponent(seriesSlug)}`)
+        .then(r => r.ok ? r.json() : [])
+        .then(renderRelated)
+        .catch(() => {});
+    } else {
+      fetch('/api/shop/products')
+        .then(r => r.ok ? r.json() : [])
+        .then(all => renderRelated(all.filter(p => p.category === product.category)))
+        .catch(() => {});
+    }
+  } catch(e) {
+    showError();
+  }
+}
+
+function showError() {
+  document.getElementById('loadingSkeleton').style.display = 'none';
+  document.getElementById('errorState').style.display = '';
+}
+
+function initCartLinks() {
+  // Footer / breadcrumb "/shop" links still navigate to the shop.
+  document.querySelectorAll('a[href="/shop"]').forEach(a => { a.href = shopHref(); });
+
+  // The nav bag now opens the in-page drawer instead of navigating away.
+  const navCart = document.getElementById('navCartLink');
+  if (navCart) {
+    navCart.href = '#';
+    navCart.addEventListener('click', e => { e.preventDefault(); openCart(); });
+  }
+
+  // Drawer controls
+  const cartClose = document.getElementById('cartClose');
+  const cartOverlay = document.getElementById('cartOverlay');
+  if (cartClose) cartClose.addEventListener('click', closeCart);
+  if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+
+  // Checkout happens on the shop page (the full, tested payment flow lives
+  // there). We close the bag, show a loading overlay so the page transition
+  // doesn't feel like a dead click, then navigate. The shop reads '#checkout'
+  // on arrival and opens its checkout modal with the shared bag.
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
+    closeCart();
+    const overlay = document.getElementById('checkoutLoading');
+    if (overlay) overlay.classList.add('show');
+    const base = shopHref();
+    const dest = base + (base.includes('#') ? '' : '#checkout');
+    // Give the overlay a frame to paint before the navigation begins.
+    requestAnimationFrame(() => { window.location.href = dest; });
+  });
+
+  updateCartBadge();
+  updateCartUI();
+}
+window.addEventListener('storage', e => {
+  if (e.key === 'kaysworks-cart') { updateCartBadge(); updateCartUI(); }
+});
+
+// Delegated chip handling — robust to quotes/× in size keys (no inline onclick).
+document.getElementById('printContent').addEventListener('click', e => {
+  const chip = e.target.closest('.size-chip');
+  if (!chip) return;
+  if (chip.closest('.print-option-picker')) {
+    if (chip.dataset.type !== undefined) selectPrintType(chip.dataset.type);
+  } else if (chip.closest('.size-picker')) {
+    if (chip.dataset.v === undefined) return;
+    if (_product && _product.category && _product.category !== 'prints') {
+      selectMerchVariant(chip.dataset.v);
+    } else {
+      selectSize(chip.dataset.v);
+    }
+  }
+});
+
+initCartLinks();
+load();
+
+/* ─── Share modal ─── */
+function shareUrl() {
+  // Canonical product URL. On the deployed site this is /shop/<slug>; on file://
+  // fall back to the current location.
+  if (_product && _product.slug && location.protocol !== 'file:') {
+    return location.origin + '/shop/' + _product.slug;
+  }
+  return location.href.split('#')[0];
+}
+function shareTitle() {
+  return _product ? `${_product.name} — Kay's Works` : "Kay's Works";
+}
+function openShare() {
+  const ov = document.getElementById('shareOverlay');
+  const inp = document.getElementById('shareUrl');
+  if (inp) inp.value = shareUrl();
+  if (ov) ov.classList.add('show');
+}
+function closeShare() {
+  const ov = document.getElementById('shareOverlay');
+  if (ov) ov.classList.remove('show');
+}
+(function(){
+  const ov = document.getElementById('shareOverlay');
+  const close = document.getElementById('shareClose');
+  if (close) close.addEventListener('click', closeShare);
+  if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeShare(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeShare(); });
+
+  const fb = document.getElementById('shareFacebook');
+  const tw = document.getElementById('shareTwitter');
+  const wa = document.getElementById('shareWhatsapp');
+  const openWin = (url) => window.open(url, '_blank', 'noopener,width=600,height=540');
+
+  if (fb) fb.addEventListener('click', () => {
+    openWin('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl()));
+  });
+  if (tw) tw.addEventListener('click', () => {
+    openWin('https://twitter.com/intent/tweet?url=' + encodeURIComponent(shareUrl())
+      + '&text=' + encodeURIComponent(shareTitle()));
+  });
+  if (wa) wa.addEventListener('click', () => {
+    openWin('https://wa.me/?text=' + encodeURIComponent(shareTitle() + ' ' + shareUrl()));
+  });
+
+  const copyBtn = document.getElementById('shareCopyBtn');
+  if (copyBtn) copyBtn.addEventListener('click', async () => {
+    const url = shareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch (_) {
+      const inp = document.getElementById('shareUrl');
+      if (inp) { inp.focus(); inp.select(); try { document.execCommand('copy'); } catch(_e){} }
+    }
+    copyBtn.textContent = 'Copied ✦';
+    setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1800);
+  });
+})();
+
+/* ─── Enquiry widget ─── */
+const KW_WHATSAPP = '2349055372963'; // Kay's WhatsApp (international format, digits only)
+function openEnquire() {
+  document.getElementById('enquireBody').style.display = '';
+  document.getElementById('enquireDone').style.display = 'none';
+  document.getElementById('enquireOverlay').classList.add('show');
+}
+function closeEnquire() { document.getElementById('enquireOverlay').classList.remove('show'); }
+(function(){
+  const fab = document.getElementById('enquireFab');
+  const overlay = document.getElementById('enquireOverlay');
+  const close = document.getElementById('enquireClose');
+  if (fab) fab.addEventListener('click', openEnquire);
+  if (close) close.addEventListener('click', closeEnquire);
+  if (overlay) overlay.addEventListener('click', e => { if (e.target === overlay) closeEnquire(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEnquire(); });
+
+  const pieceName = () => (_product && _product.name) ? _product.name : '';
+
+  const wa = document.getElementById('enquireWa');
+  if (wa) wa.addEventListener('click', () => {
+    const n = pieceName();
+    const text = n ? `Hi Kay, I have a question about "${n}":\n` : 'Hi Kay, I have a question:\n';
+    window.open('https://wa.me/' + KW_WHATSAPP + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  });
+
+  const send = document.getElementById('enquireSend');
+  if (send) send.addEventListener('click', async () => {
+    const name = document.getElementById('enquireName').value.trim();
+    const email = document.getElementById('enquireEmail').value.trim();
+    const msg = document.getElementById('enquireMsg').value.trim();
+    if (!name) { showToast('Please enter your name'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email'); return; }
+    if (msg.length < 4) { showToast('Please enter your question'); return; }
+    send.disabled = true; send.textContent = 'Sending…';
+    const n = pieceName();
+    try {
+      const res = await fetch('/api/site-form', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_type: 'commission', name, email,
+          commission_type: 'shop-enquiry',
+          message: (n ? `Enquiry about: ${n}\n\n` : 'Shop enquiry\n\n') + msg,
+        }),
+      });
+      if (!res.ok) throw new Error('send failed');
+      document.getElementById('enquireBody').style.display = 'none';
+      document.getElementById('enquireDone').style.display = '';
+    } catch (_) {
+      showToast('Could not send — please try WhatsApp instead');
+    } finally {
+      send.disabled = false; send.textContent = 'Send message';
+    }
+  });
+})();
+</script>
+</body>
+</html>

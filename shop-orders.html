@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Shop Orders · Kay's Works Admin</title>
+<link rel="icon" type="image/svg+xml" href="/images/kaysworkslogo.svg"/>
+<meta name="robots" content="noindex,nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+img{display:block;max-width:100%}
+
+:root{
+  --clay:#c4845a;--rust:#9e4f2e;--sand:#e8d5b0;--linen:#f5ede0;
+  --bark:#4a3228;--moss:#6b7c5c;--ash:#8a7060;--ink:#1e1410;
+  --gold:#c9993a;--parchment:#ede0c8;
+  --bg:var(--linen);--bg-alt:var(--parchment);--bg-card:#fff;
+  --text:var(--ink);--text-muted:var(--ash);
+  --border:rgba(74,50,40,0.12);
+  --nav-scrolled:rgba(245,237,224,0.94);
+  --green:#6b7c5c;--red:#9e4f2e;--amber:#c9993a;--blue:#4a6080;
+}
+body.dark{
+  --bg:#141010;--bg-alt:#1e1510;--bg-card:#1e1510;
+  --text:#e8d5b0;--text-muted:#9a8878;
+  --border:rgba(196,132,90,0.12);
+  --nav-scrolled:rgba(20,16,12,0.92);
+  --linen:#141010;--parchment:#1e1510;--ink:#e8d5b0;--ash:#b09888;
+}
+body::before{content:'';pointer-events:none;position:fixed;inset:0;z-index:0;opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+html{scroll-behavior:smooth;}
+body{font-family:'Crimson Pro',serif;background:var(--bg);color:var(--text);transition:background 0.4s,color 0.4s;min-height:100vh;}
+
+/* ?? Nav ?? */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(1.2rem,4vw,2.5rem);height:60px;
+  background:var(--nav-scrolled);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.nav-right a{font-family:'Crimson Pro',serif;font-size:0.88rem;color:var(--text-muted);opacity:0.8;transition:opacity 0.2s,color 0.2s;}
+.nav-right a:hover{opacity:1;color:var(--clay);}
+.theme-btn{background:none;border:none;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:0.9rem;border-radius:50%;transition:background 0.2s;}
+.theme-btn:hover{background:rgba(201,153,58,0.1);}
+
+/* ?? Layout ?? */
+.page{padding:calc(60px + 2rem) clamp(1rem,3vw,2.5rem) 4rem;}
+
+/* ?? Login ?? */
+.login-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:80vh;gap:1.2rem;
+}
+.login-box{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:4px;padding:2.5rem;width:100%;max-width:380px;
+}
+.login-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--text);margin-bottom:1.4rem;font-style:italic;}
+
+/* ?? Stat cards ?? */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:2.5rem;}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:3px;padding:1.2rem 1.4rem;
+}
+.stat-label{font-family:'Cinzel',serif;font-size:0.46rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem;}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--text);line-height:1;}
+.stat-sub{font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;}
+.stat-card.alert .stat-value{color:var(--rust);}
+.stat-card.good .stat-value{color:var(--moss);}
+
+/* ?? Toolbar ?? */
+.toolbar{
+  display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;
+  margin-bottom:1.4rem;
+}
+.toolbar-title{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-right:auto;}
+.filter-pill{
+  font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.45rem 1rem;border:1px solid var(--border);border-radius:20px;
+  background:transparent;color:var(--text-muted);
+  transition:border-color 0.2s,color 0.2s,background 0.2s;
+}
+.filter-pill:hover{border-color:var(--clay);color:var(--clay);}
+.filter-pill.active{background:var(--rust);border-color:var(--rust);color:var(--linen);}
+.refresh-btn{
+  font-family:'Cinzel',serif;font-size:0.48rem;letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.45rem 1rem;border:1px solid var(--border);border-radius:2px;
+  background:none;color:var(--text-muted);transition:border-color 0.2s,color 0.2s;
+}
+.refresh-btn:hover{border-color:var(--clay);color:var(--clay);}
+
+/* ?? Orders table ?? */
+.orders-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;margin-bottom:3rem;}
+.orders-table{width:100%;border-collapse:collapse;font-size:0.9rem;}
+.orders-table th{
+  font-family:'Cinzel',serif;font-size:0.46rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--text-muted);padding:0.7rem 1rem;
+  background:var(--bg-alt);border-bottom:1px solid var(--border);
+  text-align:left;white-space:nowrap;
+}
+.orders-table td{
+  padding:0.9rem 1rem;border-bottom:1px solid var(--border);
+  color:var(--text);font-family:'Crimson Pro',serif;
+  vertical-align:top;
+}
+.orders-table tr:last-child td{border-bottom:none;}
+.orders-table tr:hover td{background:var(--bg-alt);}
+.order-ref{font-family:'Montserrat',sans-serif;font-size:0.62rem;color:var(--clay);letter-spacing:0.05em;}
+.order-customer{font-weight:400;color:var(--text);}
+.order-email{font-size:0.8rem;color:var(--text-muted);}
+.order-items-list{font-size:0.82rem;color:var(--text-muted);line-height:1.5;}
+.order-total{font-family:'Cormorant Garamond',serif;font-size:1.05rem;white-space:nowrap;}
+.order-total-usd{font-size:0.72rem;color:var(--text-muted);}
+
+/* Status badge */
+.status-badge{
+  font-family:'Cinzel',serif;font-size:0.44rem;letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.28rem 0.7rem;border-radius:20px;white-space:nowrap;display:inline-block;
+}
+.status-pending    {background:rgba(201,153,58,0.15);color:var(--amber);}
+.status-processing {background:rgba(74,96,128,0.15);color:var(--blue);}
+.status-shipped    {background:rgba(107,124,92,0.18);color:var(--moss);}
+.status-fulfilled  {background:rgba(107,124,92,0.25);color:var(--moss);font-weight:600;}
+.status-cancelled  {background:rgba(158,79,46,0.15);color:var(--rust);}
+
+/* Payment badge */
+.pay-badge{
+  font-family:'Montserrat',sans-serif;font-size:0.5rem;font-weight:500;
+  letter-spacing:0.05em;text-transform:uppercase;
+  padding:0.2rem 0.5rem;border-radius:2px;
+  background:var(--bg-alt);color:var(--text-muted);
+  border:1px solid var(--border);white-space:nowrap;display:inline-block;
+}
+
+/* Action buttons */
+.action-btn{
+  font-family:'Cinzel',serif;font-size:0.44rem;letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.35rem 0.8rem;border:1px solid var(--border);border-radius:2px;
+  background:none;color:var(--text-muted);
+  transition:border-color 0.15s,color 0.15s;margin-right:0.3rem;margin-bottom:0.3rem;
+}
+.action-btn:hover{border-color:var(--clay);color:var(--clay);}
+.action-btn.primary{background:var(--rust);border-color:var(--rust);color:var(--linen);}
+.action-btn.primary:hover{background:var(--bark);}
+.action-btn.danger{border-color:rgba(158,79,46,0.4);color:var(--rust);}
+.action-btn.danger:hover{background:var(--rust);color:var(--linen);}
+
+/* ?? Order detail panel ?? */
+.detail-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(14,10,8,0.75);backdrop-filter:blur(6px);
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+  display:flex;align-items:flex-start;justify-content:flex-end;
+}
+.detail-overlay.open{opacity:1;pointer-events:all;}
+.detail-panel{
+  width:min(500px,100vw);height:100vh;overflow-y:auto;
+  background:var(--bg);border-left:1px solid var(--border);
+  padding:2rem 1.8rem;
+  transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.detail-overlay.open .detail-panel{transform:translateX(0);}
+.detail-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.6rem;}
+.detail-title{font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);}
+.detail-close{background:none;border:none;font-size:1.1rem;color:var(--text-muted);transition:color 0.2s;}
+.detail-close:hover{color:var(--rust);}
+.detail-section{margin-bottom:1.6rem;}
+.detail-section-label{
+  font-family:'Cinzel',serif;font-size:0.48rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--clay);margin-bottom:0.8rem;padding-bottom:0.5rem;
+  border-bottom:1px solid var(--border);
+}
+.detail-row{display:flex;justify-content:space-between;gap:1rem;padding:0.4rem 0;font-size:0.9rem;}
+.detail-row-label{color:var(--text-muted);flex-shrink:0;}
+.detail-row-val{color:var(--text);text-align:right;word-break:break-word;}
+.detail-items{display:flex;flex-direction:column;gap:0.6rem;}
+.detail-item{
+  display:flex;justify-content:space-between;
+  padding:0.6rem 0.8rem;background:var(--bg-alt);
+  border:1px solid var(--border);border-radius:2px;font-size:0.88rem;
+}
+.detail-item-name{color:var(--text);}
+.detail-item-price{color:var(--clay);font-family:'Cormorant Garamond',serif;font-size:1rem;}
+
+/* Form fields in detail panel */
+.detail-form-row{margin-bottom:0.8rem;}
+.detail-form-label{
+  font-family:'Cinzel',serif;font-size:0.46rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:0.4rem;display:block;
+}
+.detail-input,.detail-select{
+  width:100%;font-family:'Crimson Pro',serif;font-size:0.95rem;
+  padding:0.6rem 0.8rem;background:var(--bg-alt);
+  border:1px solid var(--border);border-radius:2px;color:var(--text);
+  transition:border-color 0.2s;outline:none;appearance:none;
+}
+.detail-input:focus,.detail-select:focus{border-color:var(--clay);}
+.detail-textarea{resize:vertical;min-height:70px;}
+.status-select-row{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;}
+
+/* ?? Stock section ?? */
+.stock-section{margin-bottom:3rem;}
+.stock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;}
+.stock-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:3px;padding:1.2rem;
+}
+.stock-card-name{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text);margin-bottom:0.3rem;}
+.stock-card-cat{font-family:'Cinzel',serif;font-size:0.46rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;}
+.stock-variant-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.4rem 0;border-bottom:1px solid var(--border);gap:0.5rem;
+}
+.stock-variant-row:last-child{border-bottom:none;}
+.stock-variant-label{font-family:'Montserrat',sans-serif;font-size:0.68rem;color:var(--text);}
+.stock-input{
+  width:70px;text-align:center;
+  font-family:'Montserrat',sans-serif;font-size:0.78rem;font-weight:500;
+  padding:0.3rem 0.4rem;background:var(--bg-alt);
+  border:1px solid var(--border);border-radius:2px;color:var(--text);
+  outline:none;transition:border-color 0.2s;
+}
+.stock-input:focus{border-color:var(--clay);}
+.stock-input.low{border-color:var(--amber);color:var(--amber);}
+.stock-input.out{border-color:var(--rust);color:var(--rust);}
+.stock-unlimited{font-family:'Cinzel',serif;font-size:0.46rem;letter-spacing:0.12em;color:var(--moss);text-transform:uppercase;}
+.stock-save-btn{
+  font-family:'Cinzel',serif;font-size:0.46rem;letter-spacing:0.14em;text-transform:uppercase;
+  padding:0.28rem 0.65rem;border:1px solid var(--border);border-radius:2px;
+  background:none;color:var(--text-muted);transition:border-color 0.15s,color 0.15s;
+}
+.stock-save-btn:hover{border-color:var(--clay);color:var(--clay);}
+
+/* ?? Toast ?? */
+.toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);
+  z-index:500;background:var(--bark);color:var(--sand);
+  font-family:'Cinzel',serif;font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;
+  padding:0.8rem 1.8rem;border-radius:2px;border:1px solid var(--clay);
+  opacity:0;pointer-events:none;transition:opacity 0.25s,transform 0.25s;white-space:nowrap;
+}
+body.dark .toast{background:#2a1c14;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Shared form elements */
+.form-input,.form-select{
+  width:100%;font-family:'Crimson Pro',serif;font-size:1rem;
+  padding:0.65rem 0.9rem;background:var(--bg-alt);
+  border:1px solid var(--border);border-radius:2px;color:var(--text);
+  outline:none;appearance:none;transition:border-color 0.2s;
+}
+.form-input:focus,.form-select:focus{border-color:var(--clay);}
+.form-label{
+  display:block;font-family:'Cinzel',serif;font-size:0.5rem;
+  letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem;
+}
+.form-row{margin-bottom:1rem;}
+.btn-primary{
+  font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;
+  padding:0.8rem 1.8rem;background:var(--rust);color:var(--linen);
+  border:none;border-radius:2px;transition:background 0.2s;
+}
+.btn-primary:hover{background:var(--bark);}
+
+.empty-state{
+  text-align:center;padding:4rem 2rem;color:var(--text-muted);
+}
+.empty-icon{font-size:2.5rem;opacity:0.3;margin-bottom:1rem;}
+.empty-text{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-style:italic;}
+
+@media(max-width:600px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .status-select-row{grid-template-columns:1fr;}
+  .orders-table th:nth-child(4),.orders-table td:nth-child(4),
+  .orders-table th:nth-child(5),.orders-table td:nth-child(5){display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo"><span style="font-weight:600">KAY'S</span>&nbsp;<span style="font-weight:500">WORKS</span> · Orders</span>
+  <div class="nav-right">
+    <a href="/shop">Shop</a>
+    <a href="/claim-admin">Claim Admin</a>
+    <button class="theme-btn" id="themeBtn">Moon</button>
+  </div>
+</nav>
+
+<div class="page" id="page">
+
+  <!-- Login screen -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <p class="login-title">Shop Orders</p>
+      <div class="form-row">
+        <label class="form-label">Admin password</label>
+        <input class="form-input" id="pwInput" type="password" placeholder="Password"/>
+      </div>
+      <button class="btn-primary" id="loginBtn" style="width:100%">Unlock</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" style="display:none">
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="stat-label">Total orders</div><div class="stat-value" id="statTotal">?</div></div>
+      <div class="stat-card alert" id="statPendingCard"><div class="stat-label">Pending</div><div class="stat-value" id="statPending">?</div></div>
+      <div class="stat-card"><div class="stat-label">Shipped</div><div class="stat-value" id="statShipped">?</div></div>
+      <div class="stat-card good"><div class="stat-label">Fulfilled</div><div class="stat-value" id="statFulfilled">?</div></div>
+      <div class="stat-card"><div class="stat-label">Revenue (NGN)</div><div class="stat-value" id="statRevenue">?</div><div class="stat-sub" id="statRevenueUsd"></div></div>
+      <div class="stat-card alert" id="statLowStockCard"><div class="stat-label">Low stock</div><div class="stat-value" id="statLowStock">—</div><div class="stat-sub">variants ≤ 3</div></div>
+    </div>
+
+    <!-- Orders -->
+    <div class="toolbar">
+      <span class="toolbar-title">Orders</span>
+      <button class="filter-pill active" data-status="all">All</button>
+      <button class="filter-pill" data-status="pending">Pending</button>
+      <button class="filter-pill" data-status="processing">Processing</button>
+      <button class="filter-pill" data-status="shipped">Shipped</button>
+      <button class="filter-pill" data-status="fulfilled">Fulfilled</button>
+      <button class="filter-pill" data-status="cancelled">Cancelled</button>
+      <button class="refresh-btn" id="refreshBtn">? Refresh</button>
+    </div>
+
+    <div class="orders-table-wrap">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Ref</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Payment</th>
+            <th>Delivery</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody">
+          <tr><td colspan="9" class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">No orders yet.</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Stock management -->
+    <div class="stock-section">
+      <div class="toolbar">
+        <span class="toolbar-title">Stock levels</span>
+        <button class="refresh-btn" id="refreshStockBtn">? Refresh</button>
+      </div>
+      <div class="stock-grid" id="stockGrid">
+        <div class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">Loading products?</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Order detail panel -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-head">
+      <div>
+        <div class="detail-title">Order detail</div>
+        <div id="detailRef" style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:var(--clay);margin-top:0.3rem"></div>
+      </div>
+      <button class="detail-close" onclick="closeDetail()">?</button>
+    </div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* --- Theme --- */
+function initTheme() {
+  const saved = localStorage.getItem('kaysworks-theme');
+  const dark  = saved ? saved==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('themeBtn').textContent = dark ? 'Sun' : 'Moon';
+}
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('kaysworks-theme', isDark?'dark':'light');
+  document.getElementById('themeBtn').textContent = isDark?'Sun':'Moon';
+});
+initTheme();
+
+/* --- Toast --- */
+let _toastTimer;
+function showToast(msg, dur=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), dur);
+}
+
+/* --- State --- */
+let _token = localStorage.getItem('kaysworks-admin-token') || '';
+let _orders = [];
+let _products = [];
+let _activeFilter = 'all';
+
+/* --- Helpers --- */
+function fmt(n)    { return '₦' + Number(n||0).toLocaleString('en-NG'); }
+function fmtUsd(n) { return '$' + Number(n||0).toFixed(0); }
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+function formatTime(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+}
+function short(str, n=30) { return String(str||'').length > n ? str.slice(0,n)+'⬦' : str; }
+
+/* --- Auth --- */
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const pw = document.getElementById('pwInput').value;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const res = await fetch('/api/admin/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pw }),
+    });
+    if (!res.ok) { showToast('Incorrect password'); return; }
+    const { token } = await res.json();
+    _token = token;
+    localStorage.setItem('kaysworks-admin-token', token);
+    showDashboard();
+  } catch(e) { showToast('Server error'); }
+  finally { btn.disabled=false; btn.textContent='Unlock'; }
+});
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = '';
+  loadOrders();
+  loadStock();
+}
+
+/* --- Load orders --- */
+async function loadOrders() {
+  try {
+    const url = _activeFilter === 'all'
+      ? '/api/admin/shop-orders'
+      : `/api/admin/shop-orders?status=${_activeFilter}`;
+    const res = await fetch(url, { headers: { 'x-admin-token': _token } });
+    if (!res.ok) { showToast('Failed to load orders'); return; }
+    _orders = await res.json();
+    renderOrders();
+    renderStats();
+  } catch(e) { showToast('Network error'); }
+}
+
+/* --- Stats --- */
+function renderStats() {
+  const all       = _orders;
+  const pending   = all.filter(o => o.status==='pending').length;
+  const shipped   = all.filter(o => o.status==='shipped').length;
+  const fulfilled = all.filter(o => o.status==='fulfilled').length;
+  const revenueNgn = all.filter(o=>o.status!=='cancelled').reduce((a,o)=>a+(o.total_ngn||0),0);
+  const revenueUsd = all.filter(o=>o.status!=='cancelled').reduce((a,o)=>a+(o.total_usd||0),0);
+
+  document.getElementById('statTotal').textContent     = all.length;
+  document.getElementById('statPending').textContent   = pending;
+  document.getElementById('statShipped').textContent   = shipped;
+  document.getElementById('statFulfilled').textContent = fulfilled;
+  document.getElementById('statRevenue').textContent   = '₦' + Math.round(revenueNgn/1000) + 'k';
+  document.getElementById('statRevenueUsd').textContent= fmtUsd(revenueUsd) + ' USD';
+  document.getElementById('statPendingCard').className = `stat-card ${pending>0?'alert':'good'}`;
+
+  // Low stock from products
+  let lowStockCount = 0;
+  _products.forEach(p => {
+    const sbv = p.stock_by_variant || {};
+    Object.values(sbv).forEach(v => { if (v !== null && v !== undefined && v <= 3) lowStockCount++; });
+    if (p.stock !== null && p.stock !== undefined && p.stock <= 3) lowStockCount++;
+  });
+  document.getElementById('statLowStock').textContent = lowStockCount;
+  document.getElementById('statLowStockCard').className = `stat-card ${lowStockCount>0?'alert':'good'}`;
+}
+
+/* --- Render orders table --- */
+function renderOrders() {
+  const tbody = document.getElementById('ordersBody');
+  if (!_orders.length) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">No orders${_activeFilter!=='all'?' with this status':''}.</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = _orders.map(o => {
+    const items = Array.isArray(o.items) ? o.items : [];
+    const itemsSummary = items.slice(0,2).map(i=>`${short(i.name,20)} · ${i.variant}`).join('<br/>');
+    const moreItems = items.length > 2 ? `<span style="color:var(--text-muted);font-size:0.78rem">+${items.length-2} more</span>` : '';
+    return `<tr>
+      <td><div class="order-ref">${short(o.payment_ref||o.id,18)}</div></td>
+      <td>
+        <div class="order-customer">${o.customer_name||'—'}</div>
+        <div class="order-email">${o.email||''}</div>
+      </td>
+      <td><div class="order-items-list">${itemsSummary}${moreItems}</div></td>
+      <td>
+        <div class="order-total">${fmt(o.total_ngn)}</div>
+        <div class="order-total-usd">${fmtUsd(o.total_usd)}</div>
+      </td>
+      <td><span class="pay-badge">${(o.payment_method||'—').toUpperCase()}</span></td>
+      <td style="font-size:0.82rem;color:var(--text-muted)">${o.delivery_method==='pickup'?'Pickup · Kaduna':(o.delivery_zone||'—')}</td>
+      <td><span class="status-badge status-${o.status||'pending'}">${o.status||'pending'}</span></td>
+      <td style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap">
+        ${formatDate(o.created_at)}<br/>${formatTime(o.created_at)}
+      </td>
+      <td>
+        <button class="action-btn" onclick="openDetail('${o.id}')">View</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* --- Filter pills --- */
+document.querySelectorAll('.filter-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    _activeFilter = btn.dataset.status;
+    loadOrders();
+  });
+});
+document.getElementById('refreshBtn').addEventListener('click', loadOrders);
+
+/* --- Order detail panel --- */
+function openDetail(id) {
+  const o = _orders.find(x => x.id === id);
+  if (!o) return;
+  document.getElementById('detailRef').textContent = o.payment_ref || o.id;
+  const items = Array.isArray(o.items) ? o.items : [];
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-label">Status</div>
+      <div class="status-select-row">
+        <div>
+          <label class="detail-form-label">Order status</label>
+          <select class="detail-select" id="dStatus">
+            ${['pending','processing','shipped','fulfilled','cancelled'].map(s=>
+              `<option value="${s}"${o.status===s?' selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="detail-form-label">Carrier</label>
+          <select class="detail-select" id="dCarrier">
+            ${['—','GIG Logistics','UPS','DHL','FedEx','Other'].map(c=>
+              `<option value="${c}"${(o.tracking_carrier||'—')===c?' selected':''}>${c}</option>`
+            ).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="detail-form-row">
+        <label class="detail-form-label">Tracking number</label>
+        <input class="detail-input" id="dTracking" type="text" value="${o.tracking_number||''}" placeholder="e.g. GIG123456789"/>
+      </div>
+      <div class="detail-form-row">
+        <label class="detail-form-label">Admin note (internal)</label>
+        <textarea class="detail-input detail-textarea" id="dNote">${o.admin_note||''}</textarea>
+      </div>
+      <button class="action-btn primary" onclick="saveOrderDetail('${o.id}')">Save changes</button>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-label">Customer</div>
+      <div class="detail-row"><span class="detail-row-label">Name</span><span class="detail-row-val">${o.customer_name||'—'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Email</span><span class="detail-row-val"><a href="mailto:${o.email}" style="color:var(--clay)">${o.email||'—'}</a></span></div>
+      <div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-val">${o.phone||'—'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-val">${o.address||'—'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Delivery</span><span class="detail-row-val">${o.delivery_method==='pickup'?'Pickup · Kaduna':(o.delivery_zone||'—')}</span></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-label">Items</div>
+      <div class="detail-items">
+        ${items.map(i=>`
+          <div class="detail-item">
+            <div>
+              <div class="detail-item-name">${i.name}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">${i.variant} × ${i.qty}</div>
+            </div>
+            <div class="detail-item-price">${fmt((i.priceNgn||0)*i.qty)}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-label">Payment</div>
+      <div class="detail-row"><span class="detail-row-label">Method</span><span class="detail-row-val">${(o.payment_method||'—').toUpperCase()}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Reference</span><span class="detail-row-val" style="font-family:'Montserrat',sans-serif;font-size:0.72rem;color:var(--clay)">${o.payment_ref||'—'}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Subtotal</span><span class="detail-row-val">${fmt(o.total_ngn - (o.delivery_fee_ngn||0))}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Delivery fee</span><span class="detail-row-val">${o.delivery_fee_ngn ? fmt(o.delivery_fee_ngn) : 'Free'}</span></div>
+      <div class="detail-row" style="font-weight:600"><span class="detail-row-label">Total</span><span class="detail-row-val" style="color:var(--text);font-family:'Cormorant Garamond',serif;font-size:1.1rem">${fmt(o.total_ngn)} / ${fmtUsd(o.total_usd)}</span></div>
+      <div class="detail-row"><span class="detail-row-label">Ordered</span><span class="detail-row-val">${formatDate(o.created_at)} ${formatTime(o.created_at)}</span></div>
+      ${o.fulfilled_at ? `<div class="detail-row"><span class="detail-row-label">Fulfilled</span><span class="detail-row-val" style="color:var(--moss)">${formatDate(o.fulfilled_at)} ${formatTime(o.fulfilled_at)}</span></div>` : ''}
+    </div>`;
+
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+async function saveOrderDetail(id) {
+  const status   = document.getElementById('dStatus').value;
+  const tracking = document.getElementById('dTracking').value.trim();
+  const carrier  = document.getElementById('dCarrier').value;
+  const note     = document.getElementById('dNote').value.trim();
+  try {
+    const res = await fetch(`/api/admin/shop-order/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json', 'x-admin-token': _token },
+      body: JSON.stringify({
+        status,
+        tracking_number: tracking,
+        tracking_carrier: carrier === '—' ? '' : carrier,
+        admin_note: note,
+      }),
+    });
+    if (!res.ok) { showToast('Save failed'); return; }
+    showToast('Order updated ✓');
+    closeDetail();
+    loadOrders();
+  } catch(e) { showToast('Network error'); }
+}
+
+function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
+document.getElementById('detailOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('detailOverlay')) closeDetail();
+});
+
+/* --- Stock management --- */
+async function loadStock() {
+  try {
+    const res = await fetch('/api/admin/shop-products', { headers: { 'x-admin-token': _token } });
+    if (!res.ok) return;
+    _products = await res.json();
+    renderStock();
+    renderStats();
+  } catch(e) {}
+}
+document.getElementById('refreshStockBtn').addEventListener('click', loadStock);
+
+function printStockKey(type, size) { return `${type}|${size}`; }
+function stockDomKey(key) { return String(key).replace(/[^a-z0-9]/gi,'_'); }
+function stockChoices(p) {
+  const variants = Array.isArray(p.variants) ? p.variants : [];
+  const available = p.available_variants || [];
+  const hasNested = variants.some(v => v && typeof v === 'object' && !Array.isArray(v));
+
+  if (hasNested) {
+    return variants.flatMap(opt => {
+      const type = String(opt.type || opt.print_type || opt.name || opt.label || 'Print').trim();
+      const sizes = (opt.sizes || opt.variants || []).map(String).filter(Boolean);
+      const avail = (opt.available_sizes || opt.available || opt.available_variants || sizes).map(String).filter(Boolean);
+      return (avail.length ? avail : sizes).map(size => ({ key: printStockKey(type, size), label: `${type} · ${size}` }));
+    });
+  }
+
+  if (available && typeof available === 'object' && !Array.isArray(available)) {
+    return Object.entries(available).flatMap(([type, sizes]) =>
+      (Array.isArray(sizes) ? sizes : []).map(size => ({ key: printStockKey(type, String(size)), label: `${type} · ${size}` }))
+    );
+  }
+
+  const flat = Array.isArray(available) && available.length ? available : variants;
+  return flat.map(v => ({ key: String(v), label: String(v) }));
+}
+
+function renderStock() {
+  const grid = document.getElementById('stockGrid');
+  if (!_products.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⊘</div><div class="empty-text">No products found.</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = _products.map(p => {
+    const choices  = stockChoices(p);
+    const sbv      = p.stock_by_variant || {};
+    const hasStock = p.stock !== null && p.stock !== undefined;
+    const stockRows = choices.map(choice => {
+      const v = choice.key;
+      const qty = sbv[v] !== undefined ? sbv[v] : (hasStock ? p.stock : null);
+      const cls = qty === null ? '' : qty === 0 ? 'out' : qty <= 3 ? 'low' : '';
+      const domKey = stockDomKey(v);
+      const safeKey = v.replace(/'/g,"\\'");
+      return `<div class="stock-variant-row">
+        <span class="stock-variant-label">${choice.label}</span>
+        ${qty === null
+          ? `<span class="stock-unlimited">Unlimited</span>
+             <button class="stock-save-btn" onclick="setVariantStock('${p.id}','${safeKey}',null)">Set limit</button>`
+          : `<input class="stock-input ${cls}" type="number" min="0" id="stock-${p.id}-${domKey}" value="${qty}"/>
+             <button class="stock-save-btn" onclick="saveVariantStock('${p.id}','${safeKey}')">Save</button>`
+        }
+      </div>`;
+    }).join('');
+
+    return `<div class="stock-card">
+      <div class="stock-card-name">${p.name}</div>
+      <div class="stock-card-cat">${p.category}${p.print_type?' · '+p.print_type:''}</div>
+      ${stockRows || '<div class="stock-variant-row"><span class="stock-variant-label">No variants</span></div>'}
+    </div>`;
+  }).join('');
+}
+async function saveVariantStock(pid, variant) {
+  const p   = _products.find(x => x.id === pid);
+  if (!p) return;
+  const safeKey = stockDomKey(variant);
+  const input = document.getElementById(`stock-${pid}-${safeKey}`);
+  if (!input) return;
+  const qty = parseInt(input.value, 10);
+  if (isNaN(qty) || qty < 0) { showToast('Enter a valid stock number'); return; }
+
+  const sbv = { ...(p.stock_by_variant || {}) };
+  sbv[variant] = qty;
+
+  try {
+    const res = await fetch(`/api/admin/shop-products/${pid}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json', 'x-admin-token': _token },
+      body: JSON.stringify({ stock_by_variant: sbv }),
+    });
+    if (!res.ok) { showToast('Save failed'); return; }
+    p.stock_by_variant = sbv;
+    renderStock();
+    renderStats();
+    showToast(`Stock updated · ${variant}: ${qty} ✓`);
+  } catch(e) { showToast('Network error'); }
+}
+
+async function setVariantStock(pid, variant) {
+  const p   = _products.find(x => x.id === pid);
+  if (!p) return;
+  const qty = parseInt(prompt(`Set stock limit for "${variant}" (leave blank for unlimited):`), 10);
+  if (isNaN(qty)) return; // cancelled or blank
+  const sbv = { ...(p.stock_by_variant || {}) };
+  sbv[variant] = Math.max(0, qty);
+  try {
+    const res = await fetch(`/api/admin/shop-products/${pid}`, {
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','x-admin-token':_token},
+      body: JSON.stringify({ stock_by_variant: sbv }),
+    });
+    if (!res.ok) { showToast('Save failed'); return; }
+    p.stock_by_variant = sbv;
+    renderStock();
+    renderStats();
+    showToast(`Stock set · ${variant}: ${qty} ✓`);
+  } catch(e) { showToast('Network error'); }
+}
+
+/* --- Init --- */
+if (_token) showDashboard();
+</script>
+</body>
+</html>
