@@ -4,7 +4,7 @@
 
 [build]
   publish = "."                      # static shop HTML at repo root
-  functions = "."
+  functions = "netlify/functions"
 
 # PUBLIC SHOP API -> shop.js
 [[redirects]]

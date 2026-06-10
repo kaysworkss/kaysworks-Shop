@@ -480,6 +480,18 @@ document.getElementById('pwInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('loginBtn').click();
 });
 
+function resetAdminSession(msg='Session expired. Please unlock again.') {
+  _token = '';
+  localStorage.removeItem('kaysworks-admin-token');
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginScreen').style.display = '';
+  showToast(msg, 5000);
+}
+function handleAdminAuthFailure(res) {
+  if (res.status !== 401) return false;
+  resetAdminSession('Session expired. Please unlock again.');
+  return true;
+}
 function showDashboard() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('dashboard').style.display = '';
@@ -722,7 +734,7 @@ async function saveOrderDetail(id) {
       }),
       fallback: `/.netlify/functions/shop-admin?action=shop-order&id=${encodeURIComponent(id)}`,
     });
-    if (!res.ok) { showToast('Save failed'); return; }
+    if (!res.ok) { if (handleAdminAuthFailure(res)) return; const msg = await readError(res); showToast(`Save failed: ${msg}`, 6000); return; }
     showToast('Order updated');
     closeDetail();
     loadOrders();
@@ -833,7 +845,7 @@ async function saveVariantStock(pid, variant) {
       headers: { 'Content-Type':'application/json', 'x-admin-token': _token },
       body: JSON.stringify({ stock_by_variant: sbv }),
     });
-    if (!res.ok) { showToast('Save failed'); return; }
+    if (!res.ok) { if (handleAdminAuthFailure(res)) return; const msg = await readError(res); showToast(`Save failed: ${msg}`, 6000); return; }
     p.stock_by_variant = sbv;
     renderStock();
     renderStats();
@@ -854,7 +866,7 @@ async function setVariantStock(pid, variant) {
       headers:{'Content-Type':'application/json','x-admin-token':_token},
       body: JSON.stringify({ stock_by_variant: sbv }),
     });
-    if (!res.ok) { showToast('Save failed'); return; }
+    if (!res.ok) { if (handleAdminAuthFailure(res)) return; const msg = await readError(res); showToast(`Save failed: ${msg}`, 6000); return; }
     p.stock_by_variant = sbv;
     renderStock();
     renderStats();
