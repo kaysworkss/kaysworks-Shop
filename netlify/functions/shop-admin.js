@@ -1,8 +1,8 @@
-﻿// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-//  Admin shop API â€” native Netlify Function
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Admin shop API - native Netlify Function
 //  Ported verbatim from admin.js (auth + shop section). Logic unchanged;
 //  only the handler interface is native (event in, response out).
-//  Routes (via netlify.toml redirects â†’ ?action=):
+//  Routes (via netlify.toml redirects -> ?action=):
 //    login | shop-products | shop-config | shop-orders | shop-order
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const crypto = require('crypto');
@@ -72,7 +72,7 @@ async function handleShopProducts(ctx, supabase) {
         category:           String(body.category || 'prints').slice(0, 40),
         print_type:         String(body.print_type || '').slice(0, 40),
         description:        String(body.description || body.desc || '').slice(0, 1000),
-        emoji:              String(body.emoji || 'âœ¦').slice(0, 10),
+        emoji:              String(body.emoji || '*').slice(0, 10),
         variants:           body.variants || [],
         available_variants: body.available_variants || [],
         prices_ngn:         body.prices_ngn || {},

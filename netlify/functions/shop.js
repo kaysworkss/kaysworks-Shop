@@ -1,8 +1,8 @@
-﻿// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-//  Public shop API â€” native Netlify Function
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Public shop API - native Netlify Function
 //  Ported verbatim from game.js (shop section). Logic unchanged;
 //  only the handler interface is native (event in, response out).
-//  Routes (via netlify.toml redirects â†’ ?action=):
+//  Routes (via netlify.toml redirects -> ?action=):
 //    shop-products | shop-config | shop-quote | shop-payment-init | shop-order
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const crypto = require('crypto');
@@ -97,7 +97,7 @@ async function applyProductTags(products, supabase) {
 }
 
 // â”€â”€ CHECKOUT COMPUTATION (server-authoritative) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Server-authoritative delivery rates â€” MUST mirror DELIVERY_RATES in shop.html.
+// Server-authoritative delivery rates - MUST mirror DELIVERY_RATES in shop.html.
 const SERVER_DELIVERY_RATES = {
   'pickup':   { small: { ngn: 0,    usd: 0  }, large: { ngn: 0,    usd: 0  } },
   'NG-other': { small: { ngn: 4500, usd: 0  }, large: { ngn: 6500, usd: 0  } },
@@ -107,7 +107,7 @@ const SERVER_DELIVERY_RATES = {
   'AO':       { small: { ngn: 0,    usd: 50 }, large: { ngn: 0,    usd: 68 } },
   'ROW':      { small: { ngn: 0,    usd: 48 }, large: { ngn: 0,    usd: 62 } },
 };
-const SERVER_LARGE_PRINT_VARIANTS = ['12Ã—16"', '12Ã—18"', '18Ã—24"', '24Ã—36"'];
+const SERVER_LARGE_PRINT_VARIANTS = ['12x16"', '12x18"', '18x24"', '24x36"'];
 const NGN_PER_USD = 1600;
 
 function serverVariantPrice(product, variantKey, variant, currency) {
@@ -158,7 +158,7 @@ async function computeShopCheckout(body, supabase) {
     const stockByVariant = product.stock_by_variant || {};
     const sv = stockByVariant[vkey] !== undefined ? stockByVariant[vkey] : stockByVariant[item.variant];
     if (sv !== undefined && sv < item.qty) {
-      const err = new Error(`Only ${sv} left in stock for ${product.name} Â· ${item.variant}`);
+      const err = new Error(`Only ${sv} left in stock for ${product.name}  -  ${item.variant}`);
       err.statusCode = 409;
       err.product_id = item.id;
       err.variant = item.variant;
@@ -290,7 +290,7 @@ async function fetchServerCryptoPrice(asset) {
   const symbol = asset === 'xtz' ? 'XTZUSDT' : 'ETHUSDT';
   const coingeckoId = asset === 'xtz' ? 'tezos' : 'ethereum';
   const coinbasePair = asset === 'xtz' ? 'XTZ-USD' : 'ETH-USD';
-  const TIMEOUT_MS = 7000; // raised from 3500 â€” Netlify cold starts + slow upstreams
+  const TIMEOUT_MS = 7000; // raised from 3500 - Netlify cold starts + slow upstreams
   const errors = [];
 
   async function withTimeout(promise, ms) {
@@ -698,7 +698,7 @@ function readCryptoOrderLock(order) {
 // â”€â”€ PENDING-FIRST FLOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Step 1: create a pending order BEFORE payment. Records items, totals, customer,
 // and a generated order_ref. No stock touched, no payment verified yet. The
-// returned order_ref is the durable handle â€” payment can be confirmed later even
+// returned order_ref is the durable handle - payment can be confirmed later even
 // if the customer's cart is gone.
 async function handleShopOrderCreate(ctx, supabase) {
   if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
@@ -756,7 +756,7 @@ async function handleShopOrderCreate(ctx, supabase) {
 }
 
 // Step 2: confirm payment for an existing pending order. Looks the order up by
-// order_ref (NOT the cart â€” so this works even if the browser cart is gone),
+// order_ref (NOT the cart - so this works even if the browser cart is gone),
 // re-derives a checkout from the SAVED items, verifies the payment on-chain or
 // via the card gateway, decrements stock, and flips the order to 'paid'.
 async function handleShopOrderConfirm(ctx, supabase) {
@@ -765,7 +765,7 @@ async function handleShopOrderConfirm(ctx, supabase) {
   const orderRef = String(body.order_ref || '').slice(0, 80);
   if (!orderRef) return json(400, { error: 'order_ref is required' });
 
-  // Load the pending order â€” this is the source of truth for what was bought.
+  // Load the pending order - this is the source of truth for what was bought.
   const { data: order, error: loadErr } = await supabase
     .from('shop_orders')
     .select('*')
@@ -867,7 +867,7 @@ async function handleShopOrderConfirm(ctx, supabase) {
     if (!result.ok) {
       for (const c of claimed) await releaseVariantStock(supabase, c);
       return json(409, {
-        error: `Sold out: ${item.name} Â· ${item.variant} is no longer available`,
+        error: `Sold out: ${item.name}  -  ${item.variant} is no longer available`,
         product_id: item.id,
         variant: item.variant,
         sold_out: true,
@@ -911,7 +911,7 @@ async function handleShopOrderConfirm(ctx, supabase) {
   });
 }
 
-// â”€â”€ ORDER (legacy single-shot â€” kept for backward compatibility) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ ORDER (legacy single-shot - kept for backward compatibility) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleShopOrder(ctx, supabase) {
   if (ctx.method !== 'POST') return json(405, { error: 'Method not allowed' });
   const body = ctx.body || {};
@@ -995,7 +995,7 @@ async function handleShopOrder(ctx, supabase) {
     if (!result.ok) {
       for (const c of claimed) await releaseVariantStock(supabase, c);
       return json(409, {
-        error: `Sold out: ${item.name} Â· ${item.variant} is no longer available`,
+        error: `Sold out: ${item.name}  -  ${item.variant} is no longer available`,
         product_id: item.id,
         variant: item.variant,
         sold_out: true,
@@ -1058,7 +1058,7 @@ exports.handler = async (event) => {
 
   const ctx = parseEvent(event);
   // Netlify can drop the ?action= appended by a redirect rewrite, so fall back
-  // to deriving it from the request path (e.g. /api/shop/quote â†’ shop-quote).
+  // to deriving it from the request path (e.g. /api/shop/quote -> shop-quote).
   let action = (ctx.query.action || '').toString();
   if (!action) {
     const m = (ctx.path || '').match(/\/(?:api\/shop|shop)\/([a-z-]+)/i);
