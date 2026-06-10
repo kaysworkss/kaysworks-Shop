@@ -14,13 +14,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
 
 <style>
-/* â”€â”€ Reset â”€â”€ */
+/* Reset */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
 button{-webkit-tap-highlight-color:transparent;cursor:pointer}
 img{display:block;max-width:100%}
 
-/* â”€â”€ Tokens â”€â”€ */
+/* Tokens */
 :root {
   --clay:      #c4845a;
   --rust:      #9e4f2e;
@@ -55,7 +55,7 @@ body.dark {
   --shadow-hover: 0 8px 40px rgba(0,0,0,0.5);
 }
 
-/* â”€â”€ Base â”€â”€ */
+/* Base */
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Crimson Pro', serif;
@@ -65,13 +65,13 @@ body {
   min-height: 100vh;
 }
 
-/* â”€â”€ Noise overlay â”€â”€ */
+/* Noise overlay */
 body::before {
   content:'';pointer-events:none;position:fixed;inset:0;z-index:0;opacity:0.028;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* â”€â”€ Nav â”€â”€ */
+/* Nav */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
@@ -127,7 +127,7 @@ nav.scrolled {
 }
 .cart-badge.visible { opacity: 1; transform: scale(1); }
 
-/* â”€â”€ Hero â”€â”€ */
+/* Hero */
 .shop-hero {
   padding: calc(60px + clamp(3rem,8vw,6rem)) clamp(1.2rem,4vw,3rem) clamp(2rem,5vw,4rem);
   text-align: center;
@@ -163,7 +163,7 @@ nav.scrolled {
   letter-spacing:0.3em; color:var(--gold); text-transform:uppercase;
 }
 
-/* â”€â”€ Filters â”€â”€ */
+/* Filters */
 .shop-filters {
   display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem;
   padding: 0 clamp(1.2rem,4vw,3rem) 3rem;
@@ -183,7 +183,7 @@ nav.scrolled {
   color: var(--linen);
 }
 
-/* â”€â”€ Grid â”€â”€ */
+/* Grid */
 .shop-section {
   padding: 0 clamp(1.2rem,4vw,3rem) 5rem;
 }
@@ -203,7 +203,7 @@ nav.scrolled {
   gap: 1.5rem;
 }
 
-/* â”€â”€ Product Card â”€â”€ */
+/* Product Card */
 .product-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -355,7 +355,7 @@ body.dark .variant-chip.selected { color: var(--sand); }
 .details-link:hover { color: var(--clay); }
 .details-link::after { content: '\2192'; font-size: 0.6rem; }
 
-/* â”€â”€ Cart Drawer â”€â”€ */
+/* Cart Drawer */
 .cart-overlay {
   position: fixed; inset: 0; z-index: 200;
   background: rgba(20,16,16,0.6);
@@ -494,7 +494,7 @@ body.dark .variant-chip.selected { color: var(--sand); }
 .checkout-btn:hover { background: var(--bark); }
 
 
-/* â”€â”€ Checkout Modal â”€â”€ */
+/* Checkout Modal */
 .modal-overlay {
   position: fixed; inset:0; z-index:300;
   background: rgba(14,10,8,0.75);
@@ -701,7 +701,7 @@ body.dark .variant-chip.selected { color: var(--sand); }
 .submit-pay-btn:hover { background: var(--bark); }
 .submit-pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* â”€â”€ Confirmation â”€â”€ */
+/* Confirmation */
 .confirm-screen {
   display: none; text-align: center;
   padding: 2.5rem 2rem;
@@ -732,7 +732,7 @@ body.dark .variant-chip.selected { color: var(--sand); }
 }
 .continue-btn:hover { border-color: var(--clay); color: var(--clay); }
 
-/* â”€â”€ Admin Panel â”€â”€ */
+/* Admin Panel */
 .admin-bar {
   position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 150;
   display: none;
@@ -824,7 +824,7 @@ body.dark .variant-chip.selected { color: var(--sand); }
   font-size:1.4rem; color:var(--text); margin-bottom:1.2rem; font-style:italic;
 }
 
-/* â”€â”€ Size Guide Modal â”€â”€ */
+/* Size Guide Modal */
 .size-guide-overlay {
   position: fixed; inset:0; z-index:350;
   background: rgba(14,10,8,0.75);
@@ -952,7 +952,7 @@ body.dark .variant-chip.selected { color: var(--sand); }
 }
 .size-guide-link:hover { color: var(--rust); }
 
-/* â”€â”€ Toast â”€â”€ */
+/* Toast */
 .toast {
   position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px);
   z-index:500; background:var(--bark); color:var(--sand);
@@ -966,7 +966,7 @@ body.dark .variant-chip.selected { color: var(--sand); }
 body.dark .toast { background:#2a1c14; }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* â”€â”€ Footer â”€â”€ */
+/* Footer */
 footer {
   text-align:center; padding:3rem 2rem;
   border-top:1px solid var(--border);
@@ -975,7 +975,7 @@ footer {
 footer a { color:var(--clay); transition:color 0.2s; }
 footer a:hover { color:var(--rust); }
 
-/* â”€â”€ Responsive â”€â”€ */
+/* Responsive */
 @media(max-width:600px){
   .shop-grid { grid-template-columns:1fr 1fr; gap:1rem; }
   .nav-links { display:none; }
@@ -987,7 +987,7 @@ footer a:hover { color:var(--rust); }
   .shop-grid { grid-template-columns:1fr; }
 }
 
-/* â”€â”€ Checkout handoff loading overlay (shown on arrival from a slug page) â”€â”€ */
+/* Checkout handoff loading overlay (shown on arrival from a slug page) */
 .checkout-loading {
   position: fixed; inset: 0; z-index: 9000;
   background: rgba(14,10,8,0.78);
@@ -1024,7 +1024,7 @@ footer a:hover { color:var(--rust); }
   100% { transform: translateX(350%); }
 }
 
-/* â”€â”€ Enquiry widget (floating button + modal) â”€â”€ */
+/* Enquiry widget (floating button + modal) */
 .enquire-fab {
   position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 8000;
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -1089,7 +1089,7 @@ footer a:hover { color:var(--rust); }
 .enquire-done-icon { font-size: 2.4rem; color: var(--gold); margin-bottom: 0.8rem; }
 @media(max-width:600px){ .enquire-fab { font-size: 0.48rem; padding: 0.65rem 0.95rem; } }
 
-/* â”€â”€ FAQ section â”€â”€ */
+/* FAQ section */
 .faq-section { max-width: 760px; margin: 4rem auto 2rem; padding: 0 1.4rem; }
 .faq-eyebrow { font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); text-align: center; margin-bottom: 0.5rem; }
 .faq-heading { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--text); text-align: center; margin-bottom: 2rem; }
@@ -1121,7 +1121,7 @@ footer a:hover { color:var(--rust); }
       <a href="/auction">Auction</a>
       <a href="/shop" class="active">Shop</a>
     </div>
-    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">â˜€</button>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">☀</button>
     <button class="nav-cart" id="cartBtn" aria-label="Open cart">
       &#x2715;&#xFE0E;
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:inline-block;vertical-align:middle"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
@@ -1674,7 +1674,7 @@ footer a:hover { color:var(--rust); }
 
 <!-- Admin FAB -->
 <div class="admin-bar" id="adminBar" style="display:block;position:fixed;bottom:1.5rem;right:1.5rem;z-index:150">
-  <button class="admin-fab" id="adminFab" title="Admin panel">âš™</button>
+  <button class="admin-fab" id="adminFab" title="Admin panel">⚙</button>
 </div>
 
 <!-- Admin Panel -->
@@ -1771,7 +1771,7 @@ footer a:hover { color:var(--rust); }
             </div>
             <div class="form-row" style="margin:0">
               <label class="form-label">Series name</label>
-              <input class="form-input" id="ppSeriesName" type="text" placeholder="€p³t­ á»Œlá»Ìwáº¹Ì€"/>
+              <input class="form-input" id="ppSeriesName" type="text" placeholder="Àpótí Ọlọ́wẹ̀"/>
             </div>
           </div>
 
@@ -1783,7 +1783,7 @@ footer a:hover { color:var(--rust); }
 
           <div class="form-row">
             <label class="form-label">Medium</label>
-            <input class="form-input" id="ppMedium" type="text" placeholder="Gicl©e fine art print  -  Digital painting"/>
+            <input class="form-input" id="ppMedium" type="text" placeholder="Giclée fine art print · Digital painting"/>
           </div>
 
           <div class="form-row">
@@ -1859,7 +1859,7 @@ footer a:hover { color:var(--rust); }
 <script>
 'use strict';
 
-/* â”€â”€â”€ Config (loaded from Supabase / Edge Config or defaults) â”€â”€â”€ */
+/* Config (loaded from Supabase / Edge Config or defaults) */
 let SHOP_CONFIG = {
   ethAddress:   '0x04CB6Ef95d6fd1c1d2819f5d4e18E38C11dc0d37',
   tezosAddress: 'tz1WpjkcxaoRtKzV3Ni1T6KFEnpUdkYzELwd',
@@ -1868,45 +1868,45 @@ let SHOP_CONFIG = {
     {
       id: 'print-sample-artwork', category: 'prints', name: 'Sample Artwork',
       desc: 'Choose the print format and size for this artwork.',
-      emoji: 'image',
+      emoji: '🖼',
       variants: [
         {
           type: 'Mini Print',
-          desc: 'Small-format gicl©e on cotton rag. Perfect for collectors and gifting. Half-inch border minimum. Ships flat.',
-          sizes: ['4x4"', '4x6"', '5x5"'],
+          desc: 'Small-format giclée on cotton rag. Perfect for collectors and gifting. Half-inch border minimum. Ships flat.',
+          sizes: ['4×4"', '4×6"', '5×5"'],
         },
         {
           type: 'Photographic Print',
           desc: 'Premium luster finish on photo-grade paper with pigment inks. Rich detail, subtle sheen, no glare. Listed by sheet size, min 1-inch border.',
-          sizes: ['5x7"', '8x10"', '11x14"', '18x24"'],
+          sizes: ['5×7"', '8×10"', '11×14"', '18×24"'],
         },
         {
-          type: 'Gicl©e Art Print',
-          desc: 'Gallery-quality gicl©e on 100% cotton rag archival paper (300gsm). 10-colour pigment ink. Min 1-inch white border. Signed.',
-          sizes: ['4x4"', '5x7"', '8x10"', '11x14"', '18x24"'],
+          type: 'Giclée Art Print',
+          desc: 'Gallery-quality giclée on 100% cotton rag archival paper (300gsm). 10-colour pigment ink. Min 1-inch white border. Signed.',
+          sizes: ['4×4"', '5×7"', '8×10"', '11×14"', '18×24"'],
         },
       ],
       availableVariants: {
-        'Mini Print': ['4x4"', '4x6"', '5x5"'],
-        'Photographic Print': ['5x7"', '8x10"', '11x14"', '18x24"'],
-        'Gicl©e Art Print': ['4x4"', '5x7"', '8x10"', '11x14"', '18x24"'],
+        'Mini Print': ['4×4"', '4×6"', '5×5"'],
+        'Photographic Print': ['5×7"', '8×10"', '11×14"', '18×24"'],
+        'Giclée Art Print': ['4×4"', '5×7"', '8×10"', '11×14"', '18×24"'],
       },
       priceNgn: {
-        'Mini Print|4x4"': 8000, 'Mini Print|4x6"': 9500, 'Mini Print|5x5"': 9000,
-        'Photographic Print|5x7"': 13000, 'Photographic Print|8x10"': 20000, 'Photographic Print|11x14"': 32000, 'Photographic Print|18x24"': 62000,
-        'Gicl©e Art Print|4x4"': 12000, 'Gicl©e Art Print|5x7"': 16000, 'Gicl©e Art Print|8x10"': 25000, 'Gicl©e Art Print|11x14"': 40000, 'Gicl©e Art Print|18x24"': 75000,
+        'Mini Print|4×4"': 8000, 'Mini Print|4×6"': 9500, 'Mini Print|5×5"': 9000,
+        'Photographic Print|5×7"': 13000, 'Photographic Print|8×10"': 20000, 'Photographic Print|11×14"': 32000, 'Photographic Print|18×24"': 62000,
+        'Giclée Art Print|4×4"': 12000, 'Giclée Art Print|5×7"': 16000, 'Giclée Art Print|8×10"': 25000, 'Giclée Art Print|11×14"': 40000, 'Giclée Art Print|18×24"': 75000,
       },
       priceUsd: {
-        'Mini Print|4x4"': 5, 'Mini Print|4x6"': 6, 'Mini Print|5x5"': 6,
-        'Photographic Print|5x7"': 9, 'Photographic Print|8x10"': 14, 'Photographic Print|11x14"': 22, 'Photographic Print|18x24"': 44,
-        'Gicl©e Art Print|4x4"': 8, 'Gicl©e Art Print|5x7"': 11, 'Gicl©e Art Print|8x10"': 18, 'Gicl©e Art Print|11x14"': 28, 'Gicl©e Art Print|18x24"': 52,
+        'Mini Print|4×4"': 5, 'Mini Print|4×6"': 6, 'Mini Print|5×5"': 6,
+        'Photographic Print|5×7"': 9, 'Photographic Print|8×10"': 14, 'Photographic Print|11×14"': 22, 'Photographic Print|18×24"': 44,
+        'Giclée Art Print|4×4"': 8, 'Giclée Art Print|5×7"': 11, 'Giclée Art Print|8×10"': 18, 'Giclée Art Print|11×14"': 28, 'Giclée Art Print|18×24"': 52,
       },
       badge: '', image: '',
     },
     {
-      id: 'tee-001', category: 'merch', name: '€p³t­ T-Shirt',
+      id: 'tee-001', category: 'merch', name: 'Àpótí T-Shirt',
       desc: '100% heavyweight cotton. Screen-printed design. Pre-shrunk. Unisex relaxed fit.',
-      emoji: 'ðŸ‘•',
+      emoji: '👕',
       clothing: true, clothing_type: 'tee',
       variants: ['S', 'M', 'L', 'XL', 'XXL'],
       priceNgn: { S: 22000, M: 22000, L: 22000, XL: 24000, XXL: 24000 },
@@ -1914,9 +1914,9 @@ let SHOP_CONFIG = {
       badge: 'New', image: '',
     },
     {
-      id: 'hoodie-001', category: 'merch', name: '€p³t­ Hoodie',
+      id: 'hoodie-001', category: 'merch', name: 'Àpótí Hoodie',
       desc: '380gsm heavyweight fleece. Drop-shoulder, oversized silhouette. Screen-printed. Kangaroo pocket.',
-      emoji: 'ðŸ§¥',
+      emoji: '🧥',
       clothing: true, clothing_type: 'hoodie',
       variants: ['S', 'M', 'L', 'XL', 'XXL'],
       priceNgn: { S: 42000, M: 42000, L: 42000, XL: 45000, XXL: 45000 },
@@ -1926,34 +1926,34 @@ let SHOP_CONFIG = {
     {
       id: 'tote-001', category: 'merch', name: 'Canvas Tote Bag',
       desc: 'Heavy-duty natural canvas. Screen-printed. Holds everything.',
-      emoji: 'ðŸ›',
+      emoji: '🛍',
       variants: ['One size'],
       priceNgn: { 'One size': 14000 },
       priceUsd: { 'One size': 9 },
       badge: '', image: '',
     },
     {
-      id: 'nb-001', category: 'notebooks', name: 'Faux Leather Journal - Classic',
+      id: 'nb-001', category: 'notebooks', name: 'Faux Leather Journal — Classic',
       desc: 'A5 faux leather bound notebook. 200 ivory pages, lay-flat binding.',
-      emoji: 'ðŸ““',
+      emoji: '📓',
       variants: ['Midnight', 'Cognac', 'Olive'],
       priceNgn: { Midnight: 19000, Cognac: 19000, Olive: 19000 },
       priceUsd: { Midnight: 13, Cognac: 13, Olive: 13 },
       badge: 'Bestseller', image: '',
     },
     {
-      id: 'nb-002', category: 'notebooks', name: 'Faux Leather Journal - Large',
+      id: 'nb-002', category: 'notebooks', name: 'Faux Leather Journal — Large',
       desc: 'A4 faux leather bound notebook. 240 ivory pages, ribbon marker.',
-      emoji: 'ðŸ“’',
+      emoji: '📒',
       variants: ['Midnight', 'Cognac'],
       priceNgn: { Midnight: 24000, Cognac: 24000 },
       priceUsd: { Midnight: 16, Cognac: 16 },
       badge: '', image: '',
     },
     {
-      id: 'stk-001', category: 'stickers', name: '€p³t­ Sticker Pack',
+      id: 'stk-001', category: 'stickers', name: 'Àpótí Sticker Pack',
       desc: 'Set of 6 die-cut vinyl stickers. Waterproof. Dishwasher-safe.',
-      emoji: '*',
+      emoji: '✦',
       variants: ['Pack of 6'],
       priceNgn: { 'Pack of 6': 4500 },
       priceUsd: { 'Pack of 6': 3 },
@@ -1964,7 +1964,7 @@ let SHOP_CONFIG = {
 
 const SHOP_DEFAULT_PRODUCTS = SHOP_CONFIG.products.map(p => JSON.parse(JSON.stringify(p)));
 
-/* â”€â”€â”€ Cart state â”€â”€â”€ */
+/* Cart state */
 let cart = [];
 // Shared cart, persisted under the same key used by print-detail.html so the
 // bag stays in sync across the shop grid and individual product pages.
@@ -1988,8 +1988,8 @@ window.addEventListener('storage', (e) => {
 let selectedVariants = {};
 let selectedTypes = {};
 
-/* â”€â”€â”€ Helpers â”€â”€â”€ */
-function fmt(n) { return 'NGN' + Number(n).toLocaleString('en-NG'); }
+/* Helpers */
+function fmt(n) { return '₦' + Number(n).toLocaleString('en-NG'); }
 function fmtUsd(n) { return '$' + Number(n).toFixed(0); }
 function uid() { return Math.random().toString(36).slice(2,9); }
 function showToast(msg, dur=2800) {
@@ -2025,7 +2025,7 @@ function normalizeProduct(p) {
   p.category = p.category || 'merch';
   p.name = p.name || 'Untitled product';
   p.desc = p.desc || p.description || '';
-  p.emoji = p.emoji || '*';
+  p.emoji = p.emoji || '✦';
   if (p.category !== 'prints') p.variants = toVariantList(p.variants);
   else p.variants = Array.isArray(p.variants) ? p.variants : [];
   p.priceNgn = p.priceNgn || p.prices_ngn || {};
@@ -2083,7 +2083,7 @@ function defaultProduct(category) {
     return normalizeProduct({
       id, category, name: 'Sketch Journal',
       desc: 'Lay-flat notebook for sketches, notes, and studio planning.',
-      emoji: 'ðŸ““', variants: ['A5', 'A4'],
+      emoji: '📓', variants: ['A5', 'A4'],
       priceNgn: { A5: 18000, A4: 24000 },
       priceUsd: { A5: 12, A4: 16 },
       badge: '', image: '',
@@ -2093,7 +2093,7 @@ function defaultProduct(category) {
     return normalizeProduct({
       id, category, name: 'Studio Sticker Pack',
       desc: 'Set of die-cut vinyl stickers for laptops, bottles, and sketchbooks.',
-      emoji: '*', variants: ['Pack of 6'],
+      emoji: '✦', variants: ['Pack of 6'],
       priceNgn: { 'Pack of 6': 4500 },
       priceUsd: { 'Pack of 6': 3 },
       badge: '', image: '',
@@ -2102,7 +2102,7 @@ function defaultProduct(category) {
   return normalizeProduct({
     id, category: 'merch', name: 'New T-Shirt',
     desc: 'Heavyweight cotton merch piece with artwork detail.',
-    emoji: 'ðŸ‘•', clothing: true, clothing_type: 'tee',
+    emoji: '👕', clothing: true, clothing_type: 'tee',
     variants: ['S', 'M', 'L', 'XL'],
     priceNgn: { S: 22000, M: 22000, L: 22000, XL: 24000 },
     priceUsd: { S: 15, M: 15, L: 15, XL: 16 },
@@ -2114,36 +2114,36 @@ function defaultPrintOptionData() {
   const variants = [
     {
       type: 'Mini Print',
-      desc: 'Small-format gicl©e on cotton rag. Perfect for collectors and gifting. Half-inch border minimum. Ships flat.',
-      sizes: ['4x4"', '4x6"', '5x5"'],
+      desc: 'Small-format giclée on cotton rag. Perfect for collectors and gifting. Half-inch border minimum. Ships flat.',
+      sizes: ['4×4"', '4×6"', '5×5"'],
     },
     {
       type: 'Photographic Print',
       desc: 'Premium luster finish on photo-grade paper with pigment inks. Rich detail, subtle sheen, no glare. Listed by sheet size, min 1-inch border.',
-      sizes: ['5x7"', '8x10"', '11x14"', '18x24"'],
+      sizes: ['5×7"', '8×10"', '11×14"', '18×24"'],
     },
     {
-      type: 'Gicl©e Art Print',
-      desc: 'Gallery-quality gicl©e on 100% cotton rag archival paper (300gsm). 10-colour pigment ink. Min 1-inch white border. Signed.',
-      sizes: ['4x4"', '5x7"', '8x10"', '11x14"', '18x24"'],
+      type: 'Giclée Art Print',
+      desc: 'Gallery-quality giclée on 100% cotton rag archival paper (300gsm). 10-colour pigment ink. Min 1-inch white border. Signed.',
+      sizes: ['4×4"', '5×7"', '8×10"', '11×14"', '18×24"'],
     },
   ];
   return {
     variants,
     availableVariants: {
-      'Mini Print': ['4x4"', '4x6"', '5x5"'],
-      'Photographic Print': ['5x7"', '8x10"', '11x14"', '18x24"'],
-      'Gicl©e Art Print': ['4x4"', '5x7"', '8x10"', '11x14"', '18x24"'],
+      'Mini Print': ['4×4"', '4×6"', '5×5"'],
+      'Photographic Print': ['5×7"', '8×10"', '11×14"', '18×24"'],
+      'Giclée Art Print': ['4×4"', '5×7"', '8×10"', '11×14"', '18×24"'],
     },
     priceNgn: {
-      'Mini Print|4x4"': 8000, 'Mini Print|4x6"': 9500, 'Mini Print|5x5"': 9000,
-      'Photographic Print|5x7"': 13000, 'Photographic Print|8x10"': 20000, 'Photographic Print|11x14"': 32000, 'Photographic Print|18x24"': 62000,
-      'Gicl©e Art Print|4x4"': 12000, 'Gicl©e Art Print|5x7"': 16000, 'Gicl©e Art Print|8x10"': 25000, 'Gicl©e Art Print|11x14"': 40000, 'Gicl©e Art Print|18x24"': 75000,
+      'Mini Print|4×4"': 8000, 'Mini Print|4×6"': 9500, 'Mini Print|5×5"': 9000,
+      'Photographic Print|5×7"': 13000, 'Photographic Print|8×10"': 20000, 'Photographic Print|11×14"': 32000, 'Photographic Print|18×24"': 62000,
+      'Giclée Art Print|4×4"': 12000, 'Giclée Art Print|5×7"': 16000, 'Giclée Art Print|8×10"': 25000, 'Giclée Art Print|11×14"': 40000, 'Giclée Art Print|18×24"': 75000,
     },
     priceUsd: {
-      'Mini Print|4x4"': 5, 'Mini Print|4x6"': 6, 'Mini Print|5x5"': 6,
-      'Photographic Print|5x7"': 9, 'Photographic Print|8x10"': 14, 'Photographic Print|11x14"': 22, 'Photographic Print|18x24"': 44,
-      'Gicl©e Art Print|4x4"': 8, 'Gicl©e Art Print|5x7"': 11, 'Gicl©e Art Print|8x10"': 18, 'Gicl©e Art Print|11x14"': 28, 'Gicl©e Art Print|18x24"': 52,
+      'Mini Print|4×4"': 5, 'Mini Print|4×6"': 6, 'Mini Print|5×5"': 6,
+      'Photographic Print|5×7"': 9, 'Photographic Print|8×10"': 14, 'Photographic Print|11×14"': 22, 'Photographic Print|18×24"': 44,
+      'Giclée Art Print|4×4"': 8, 'Giclée Art Print|5×7"': 11, 'Giclée Art Print|8×10"': 18, 'Giclée Art Print|11×14"': 28, 'Giclée Art Print|18×24"': 52,
     },
   };
 }
@@ -2244,7 +2244,7 @@ function remainingToAdd(p, variantKey) {
   return Math.max(0, cap - qtyInCart(p.id, variantKey));
 }
 
-/* â”€â”€â”€ Theme â”€â”€â”€ */
+/* Theme */
 function initTheme() {
   const saved = localStorage.getItem('kaysworks-theme');
   const dark = saved ? saved==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
@@ -2258,11 +2258,11 @@ document.getElementById('themeBtn').addEventListener('click', () => {
 });
 initTheme();
 
-/* â”€â”€â”€ Nav scroll â”€â”€â”€ */
+/* Nav scroll */
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
 
-/* â”€â”€â”€ Build product cards â”€â”€â”€ */
+/* Build product cards */
 function buildBadgeStack(p) {
   const tags = [];
   if (p.badge) tags.push(`<span class="card-tag card-tag-manual">${escapeText(p.badge)}</span>`);
@@ -2533,7 +2533,7 @@ function renderProducts() {
   SHOP_CONFIG.products.forEach(p => syncCardStock(p.id, selectedVariants[p.id]));
 }
 
-/* â”€â”€â”€ Filter â”€â”€â”€ */
+/* Filter */
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
@@ -2554,7 +2554,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-/* â”€â”€â”€ Cart â”€â”€â”€ */
+/* Cart */
 function addToCart(p, variant) {
   if (!variant) { showToast(p.category === 'prints' ? 'Please choose a print size' : 'Please choose an option'); return; }
   const key = p.id + '-' + variant;
@@ -2587,7 +2587,7 @@ function addToCart(p, variant) {
   openCart();
   // If that was the last one, slam the card shut so the next shopper feels it.
   syncCardStock(p.id, variant);
-  showToast(remainingToAdd(p, variant) === 0 ? 'Added - last one, now sold out *' : 'Added to bag *');
+  showToast(remainingToAdd(p, variant) === 0 ? 'Added - last one, now sold out ✦' : 'Added to bag ✦');
 }
 
 function refreshCheckoutPricing() {
@@ -2663,14 +2663,14 @@ function updateCartUI() {
     return `
     <div class="cart-item">
       <div class="cart-item-img">
-        ${c.image ? `<img src="${c.image}" alt="${escapeAttr(c.name)}" onerror="this.replaceWith(document.createTextNode('${String(c.emoji||'image').replace(/'/g,'')}'))"/>` : c.emoji}
+        ${c.image ? `<img src="${c.image}" alt="${escapeAttr(c.name)}" onerror="this.replaceWith(document.createTextNode('${String(c.emoji||'🖼').replace(/'/g,'')}'))"/>` : c.emoji}
       </div>
       <div class="cart-item-info">
         <div class="cart-item-name">${c.name}</div>
         <div class="cart-item-variant">${c.variant}</div>
         ${note}
         <div class="cart-item-qty">
-          <button class="qty-btn" data-key="${cartDomKey(c.key)}" data-dir="-1">âˆ’</button>
+          <button class="qty-btn" data-key="${cartDomKey(c.key)}" data-dir="-1">−</button>
           <span class="qty-val">${c.qty}</span>
           <button class="qty-btn" data-key="${cartDomKey(c.key)}" data-dir="1"${maxed ? ' disabled style="opacity:0.35;cursor:not-allowed"' : ''}>+</button>
           <button class="cart-item-remove" data-key="${cartDomKey(c.key)}">Remove</button>
@@ -2728,8 +2728,8 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', closeCart);
 
-/* â”€â”€â”€ Checkout modal â”€â”€â”€ */
-/* â”€â”€â”€ Size guide engine â”€â”€â”€ */
+/* Checkout modal */
+/* Size guide engine */
 const SIZE_DATA = {
   tee: {
     fitNote: "Kay's tees are cut with a relaxed unisex fit. Use the garment measurements as the final fit check.",
@@ -2843,7 +2843,7 @@ document.getElementById('sizeGuideOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('sizeGuideOverlay')) closeSizeGuide();
 });
 
-/* â”€â”€â”€ Delivery zone engine â”€â”€â”€ */
+/* Delivery zone engine */
 // Large print = any print variant 12x16" or above, or a tube-shipped item
 // All rates in NGN for domestic, USD for international
 const DELIVERY_RATES = {
@@ -2857,7 +2857,7 @@ const DELIVERY_RATES = {
 };
 
 // Large print threshold - tube shipped
-const LARGE_PRINT_VARIANTS = ['12x16"','12x18"','18x24"','24x36"'];
+const LARGE_PRINT_VARIANTS = ['12x16"','12x18"','18×24"','24x36"'];
 
 let _deliveryMethod = 'pickup'; // 'pickup' | 'ship'
 let _deliveryZone   = 'pickup';
@@ -2949,7 +2949,7 @@ document.getElementById('ckCountry') && document.getElementById('ckCountry').add
 // Init pickup as default active
 setDeliveryMethod('pickup');
 
-/* â”€â”€â”€ Updated total helpers (include delivery) â”€â”€â”€ */
+/* Updated total helpers (include delivery) */
 function cartNgnTotal() { return cart.reduce((a,c)=>a+c.priceNgn*c.qty, 0); }
 function cartUsdTotal() { return cart.reduce((a,c)=>a+c.priceUsd*c.qty, 0); }
 function grandTotalNgn() { return cartNgnTotal() + deliveryFeeNgn(); }
@@ -2974,7 +2974,7 @@ function buildOrderSummary() {
       <div class="order-line-main">
         <div class="order-line-name">${c.name}  -  ${c.variant}</div>
         <div class="order-line-controls">
-          <button type="button" class="qty-btn order-qty-btn" data-key="${cartDomKey(c.key)}" data-dir="-1">âˆ’</button>
+          <button type="button" class="qty-btn order-qty-btn" data-key="${cartDomKey(c.key)}" data-dir="-1">−</button>
           <span class="qty-val">${c.qty}</span>
           <button type="button" class="qty-btn order-qty-btn" data-key="${cartDomKey(c.key)}" data-dir="1">+</button>
         </div>
@@ -3026,7 +3026,7 @@ document.getElementById('checkoutOverlay').addEventListener('click', e=>{
 document.getElementById('checkoutBtn').addEventListener('click', ()=>openCheckout('paystack'));
 
 
-/* â”€â”€â”€ Payment handlers â”€â”€â”€ */
+/* Payment handlers */
 function gv(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
 // Assemble a single human-readable address string from the carrier-specific
@@ -3108,7 +3108,7 @@ function checkoutPayload(customer, method, extra = {}) {
 
 async function postShopJson(url, payload) {
   if (window.__shopLoadStart) window.__shopLoadStart();
-  // â”€â”€ DIAGNOSTIC CAPTURE (remove with the diagnostic panel once stable) â”€â”€
+ // DIAGNOSTIC CAPTURE (remove with the diagnostic panel once stable) 
   window.__shopDiag = window.__shopDiag || [];
   let res, data;
   try {
@@ -3127,7 +3127,7 @@ async function postShopJson(url, payload) {
   window.__shopDiag.unshift({ t: new Date().toLocaleTimeString(), url, status: res.status, body: JSON.stringify(data) });
   if (window.__shopDiag.length > 8) window.__shopDiag.length = 8;
   if (window.__renderShopDiag) window.__renderShopDiag();
-  // â”€â”€ END DIAGNOSTIC CAPTURE â”€â”€
+ // END DIAGNOSTIC CAPTURE 
   if (window.__shopLoadDone) window.__shopLoadDone();
   if (!res.ok) throw new Error(data.error || `${url} failed`);
   return data;
@@ -3319,7 +3319,7 @@ document.getElementById('cryptoConfirmBtn').addEventListener('click', () => {
   submitManualCrypto('eth');
 });
 
-// â”€â”€ PENDING-FIRST ORDER HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// PENDING-FIRST ORDER HELPERS 
 // Create a pending order on the server BEFORE payment. Returns { order_ref, ... }.
 async function createPendingOrder(customer, method, checkoutQuote) {
   return postShopJson('/api/shop/order-create', checkoutPayload(customer, method, {
@@ -3461,7 +3461,7 @@ async function finalizeReturnedGatewayCheckout() {
     showToast('Payment received, but order recording needs review: ' + (e.message || 'unknown error'), 6000);
   }
 }
-/* â”€â”€â”€ Admin â”€â”€â”€ */
+/* Admin */
 const ADMIN_PW = ''; // checked server-side - this is just UX gating
 let adminUnlocked = false;
 
@@ -3504,13 +3504,14 @@ function loadAdminConfig() {
   populatePrintPageSelector();
 }
 
-/* â”€â”€â”€ Print page editor â”€â”€â”€ */
+/* Print page editor */
 function slugify(s) {
-  return s.toLowerCase()
-    .replace(/[ ¡¢£¤¥]/g,'a').replace(/[¨©ª«]/g,'e')
-    .replace(/[¬­®¯]/g,'i').replace(/[²³oµ¶]/g,'o')
-    .replace(/[¹º»¼]/g,'u').replace(/[±]/g,'n')
-    .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  return String(s || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/(^-|-$)/g,'');
 }
 
 function populatePrintPageSelector() {
@@ -3659,7 +3660,7 @@ function renderAdminProducts() {
 
   let html = '';
 
-  // â”€â”€ Print admin section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ // Print admin section 
   if (prints.length) {
     html += `<p class="admin-section-title" style="margin-top:0">Print options, sizes &amp; availability</p>
     <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:1rem">
@@ -3751,7 +3752,7 @@ function renderAdminProducts() {
     });
   }
 
-  // â”€â”€ Other products â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ // Other products 
   html += `<p class="admin-section-title" style="margin-top:1.6rem">Merch, notebooks &amp; stickers</p>
   <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:1rem">
     Edit each product as its own item. Apparel merch such as tees, hoodies, and caps can use size guides; notebooks, stickers, totes, and other goods use their own variant labels, prices, and stock.
@@ -4008,7 +4009,7 @@ document.getElementById('addProductBtn').addEventListener('click', ()=>{
   const defaults = defaultPrintOptionData();
   SHOP_CONFIG.products.push({
     id: 'prod-'+uid(), category: 'prints', name: 'New Artwork',
-    desc: 'Choose the print format and size for this artwork.', emoji: 'image',
+    desc: 'Choose the print format and size for this artwork.', emoji: '🖼',
     variants: defaults.variants.map(o => ({ ...o, sizes: [...o.sizes] })),
     availableVariants: Object.fromEntries(Object.entries(defaults.availableVariants).map(([type, sizes]) => [type, [...sizes]])),
     priceNgn: { ...defaults.priceNgn },
@@ -4026,7 +4027,7 @@ document.getElementById('saveConfigBtn').addEventListener('click', async () => {
   btn.disabled = true; btn.textContent = 'Saving...';
 
   try {
-    // â”€â”€ Read and save each product â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ // Read and save each product 
     document.querySelectorAll('.admin-product-row').forEach(row => {
       const idx = Number(row.dataset.idx);
       const p   = SHOP_CONFIG.products[idx];
@@ -4052,7 +4053,7 @@ document.getElementById('saveConfigBtn').addEventListener('click', async () => {
       if (descEl)  p.desc  = descEl.value.trim();
       if (badgeEl) p.badge = badgeEl.value.trim();
       if (imgEl)   p.image = imgEl.value.trim();
-      if (emojiEl) p.emoji = emojiEl.value.trim() || '*';
+      if (emojiEl) p.emoji = emojiEl.value.trim() || '✦';
       if (stockEl) p.stock = stockEl.value === '' ? null : Number(stockEl.value);
 
       if (p.category === 'prints') {
@@ -4189,7 +4190,7 @@ document.getElementById('saveConfigBtn').addEventListener('click', async () => {
   }
 });
 
-/* â”€â”€â”€ ETH wallet payment â”€â”€â”€ */
+/* ETH wallet payment */
 // Uses window.ethereum (MetaMask, Coinbase Wallet, Rabby, any EIP-1193 provider)
 // + ethers.js 5 (loaded from cdnjs) for sending the transaction.
 // ERC-20 transfers use the minimal transfer(address,uint256) ABI - no full ABI needed.
@@ -4220,7 +4221,7 @@ function ethEthAmount() {
   return (grandTotalUsd() / price).toFixed(5);
 }
 
-/* â”€â”€ Render ETH panel â”€â”€ */
+/* Render ETH panel */
 function renderEthPanel() {
   const addr     = SHOP_CONFIG.ethAddress;
   const ethAmt   = ethEthAmount();
@@ -4288,7 +4289,7 @@ function renderEthPanel() {
   }
 }
 
-/* â”€â”€ Connect ETH wallet â”€â”€ */
+/* Connect ETH wallet */
 async function ethConnectWallet() {
   if (_ethConnectedAddr || _ethConnecting) return;
 
@@ -4330,7 +4331,7 @@ async function ethConnectWallet() {
   }
 }
 
-/* â”€â”€ Send ETH via connected wallet â”€â”€ */
+/* Send ETH via connected wallet */
 document.getElementById('ethConnectBtn').addEventListener('click', ethConnectWallet);
 
 document.getElementById('ethDisconnectBtn').addEventListener('click', () => {
@@ -4381,7 +4382,7 @@ document.getElementById('ethSendBtn').addEventListener('click', async () => {
     if (/rejected|denied|cancel|user denied/i.test(msg)) {
       showToast('Transaction cancelled');
     } else {
-      showToast('Transaction sent \u2014 confirming. If this doesn\u2019t complete, use â€œconfirm manuallyâ€ with your transaction hash.');
+      showToast("Transaction sent - confirming. If this does not complete, use confirm manually with your transaction hash.");
       console.error('[ETH] send error:', e);
     }
   } finally {
@@ -4391,7 +4392,7 @@ document.getElementById('ethSendBtn').addEventListener('click', async () => {
   }
 });
 
-/* â”€â”€ Send ERC-20 (USDC / USDT) via connected wallet â”€â”€ */
+/* Send ERC-20 (USDC / USDT) via connected wallet */
 async function sendErc20(token) {
   if (!validateForm()) return;
   const toAddr = SHOP_CONFIG.ethAddress;
@@ -4439,7 +4440,7 @@ async function sendErc20(token) {
     if (/rejected|denied|cancel|user denied/i.test(msg)) {
       showToast('Transaction cancelled');
     } else {
-      showToast('Transaction sent \u2014 confirming. If this doesn\u2019t complete, use â€œconfirm manuallyâ€ with your transaction hash.');
+      showToast("Transaction sent - confirming. If this does not complete, use confirm manually with your transaction hash.");
       console.error('[ETH ' + label + '] send error:', e);
     }
   } finally {
@@ -4450,7 +4451,7 @@ async function sendErc20(token) {
 document.getElementById('ethSendUsdcBtn').addEventListener('click', () => sendErc20('usdc'));
 document.getElementById('ethSendUsdtBtn').addEventListener('click', () => sendErc20('usdt'));
 
-/* â”€â”€â”€ Tezos / Beacon payment â”€â”€â”€ */
+/* Tezos / Beacon payment */
 // Robust Beacon connection - matches the working burn-redeem.html pattern.
 // Supports Temple (desktop extension), Beacon QR (mobile), and clean retry.
 
@@ -4460,7 +4461,7 @@ let _tezosWalletProvider = null;
 let _tezosConnecting = false;
 let _xtzPerUsd = null; // set by fetchCryptoRates()
 
-/* â”€â”€ Fetch ETH + XTZ prices â”€â”€
+/* Fetch ETH + XTZ prices 
    Strategy: race Binance and CoinGecko simultaneously - whichever responds
    first wins. Each source has a hard 3 s timeout so we never hang.          */
 (async function fetchCryptoRates() {
@@ -4619,7 +4620,7 @@ function tezosShortAddr(addr) {
   return addr.slice(0,6) + '...' + addr.slice(-4);
 }
 
-/* â”€â”€ Scan all known global names for a loaded Beacon SDK â”€â”€ */
+/* Scan all known global names for a loaded Beacon SDK */
 async function getBeaconSdkForShop() {
   const candidates = [
     window.beacon, window.walletbeacon, window.beaconSdk,
@@ -4636,7 +4637,7 @@ async function getBeaconSdkForShop() {
   return null;
 }
 
-/* â”€â”€ Lazy-load Beacon SDK (only one copy - avoids the double-register bug) â”€â”€ */
+/* Lazy-load Beacon SDK (only one copy - avoids the double-register bug) */
 let _beaconSdkLoadPromise = null;
 async function loadBeaconSdk() {
   // First try already-loaded globals (Taquito bundle bundles Beacon)
@@ -4692,7 +4693,7 @@ async function resetShopBeaconClient(client) {
   }
 }
 
-/* â”€â”€ Normalise wallet-param objects (Taquito compat) â”€â”€ */
+/* Normalise wallet-param objects (Taquito compat) */
 function resolveBeaconShopParams(p) {
   return Promise.resolve(typeof p === 'function' ? p() : p).then(op => {
     if (!op || typeof op !== 'object') return op;
@@ -4704,7 +4705,7 @@ function resolveBeaconShopParams(p) {
   });
 }
 
-/* â”€â”€ Build a minimal wallet provider backed by the Beacon DAppClient â”€â”€ */
+/* Build a minimal wallet provider backed by the Beacon DAppClient */
 function beaconShopProvider(client, address) {
   return {
     _client: client,
@@ -4725,7 +4726,7 @@ function beaconShopProvider(client, address) {
   };
 }
 
-/* â”€â”€ Single Beacon connect attempt â”€â”€ */
+/* Single Beacon connect attempt */
 async function beaconShopConnectAttempt(DAppClient, sdk, resetFirst) {
   if (resetFirst) {
     await resetShopBeaconClient(_tezosBeaconClient);
@@ -4754,7 +4755,7 @@ async function beaconShopConnectAttempt(DAppClient, sdk, resetFirst) {
   return { client, address };
 }
 
-/* â”€â”€ Full connect flow (with clean-session retry) â”€â”€ */
+/* Full connect flow (with clean-session retry) */
 async function tezosConnectWallet() {
   if (_tezosConnectedAddr || _tezosConnecting) return;
   _tezosConnecting = true;
@@ -4797,7 +4798,7 @@ async function tezosConnectWallet() {
   }
 }
 
-/* â”€â”€ Render the Tezos panel â”€â”€ */
+/* Render the Tezos panel */
 function renderTezosPanel() {
   const addr = SHOP_CONFIG.tezosAddress;
   const xtz  = tezosXtzAmount(); // null until rate loads
@@ -4904,7 +4905,7 @@ document.getElementById('tezosSendBtn').addEventListener('click', async () => {
     if (/reject|cancel|denied|aborted/i.test(msg)) {
       showToast('Transaction cancelled');
     } else {
-      showToast('Transaction sent - confirming. If this doesn\u2019t complete, use â€œconfirm manuallyâ€ with your transaction hash.');
+      showToast("Transaction sent - confirming. If this does not complete, use confirm manually with your transaction hash.");
       console.error('[Tezos] send error:', e);
     }
   } finally {
@@ -4931,13 +4932,13 @@ document.querySelectorAll('.pay-tab').forEach(t => {
   t.addEventListener('click', () => _patchedSwitch(t.dataset.pay));
 });
 
-/* â”€â”€â”€ Inject payment keys (set via env on your server or meta tags) â”€â”€â”€ */
+/* Inject payment keys (set via env on your server or meta tags) */
 // These should be injected server-side as meta tags, e.g.:
 // <meta name="paystack-key" content="pk_live_..."/>
 const paystackMeta = document.querySelector('meta[name="paystack-key"]');
 if (paystackMeta) window.__PAYSTACK_KEY__ = paystackMeta.content;
 
-/* â”€â”€â”€ Load shop data from API â”€â”€â”€ */
+/* Load shop data from API */
 async function loadShopData() {
   try {
     const [productsRes, configRes] = await Promise.all([
@@ -4954,7 +4955,7 @@ async function loadShopData() {
           print_type:         r.print_type || '',
           name:               r.name,
           desc:               r.description || r.desc || '',
-          emoji:              r.emoji || '*',
+          emoji:              r.emoji || '✦',
           variants:           r.variants || [],
           availableVariants:  r.available_variants || [],
           _standardVariants:  r.variants || [],
@@ -5012,7 +5013,7 @@ async function loadShopData() {
   renderProducts();
 }
 
-/* â”€â”€â”€ Save product via admin API â”€â”€â”€ */
+/* Save product via admin API */
 async function apiSaveProduct(p, token) {
   // A real DB row has a UUID id. Anything else - temp 'prod-...' ids,
   // hardcoded sample ids like 'print-sample-artwork', or a missing id -
@@ -5027,7 +5028,7 @@ async function apiSaveProduct(p, token) {
     category:           p.category,
     print_type:         p.print_type || '',
     description:        p.desc,
-    emoji:              p.emoji || '*',
+    emoji:              p.emoji || '✦',
     variants:           p.variants,
     available_variants: p.availableVariants || [],
     prices_ngn:         p.priceNgn,
@@ -5073,18 +5074,18 @@ async function apiDeleteProduct(id, token) {
   if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Delete failed'); }
 }
 
-/* â”€â”€â”€ Show admin FAB always (protected by password on click) â”€â”€â”€ */
+/* Show admin FAB always (protected by password on click) */
 document.getElementById('adminBar').classList.add('visible');
 
-/* â”€â”€â”€ Init â”€â”€â”€ */
+/* Init */
 document.getElementById('adminBar').classList.add('visible');
 
-/* â”€â”€â”€ FAQ accordion â”€â”€â”€ */
+/* FAQ accordion */
 document.querySelectorAll('.faq-q').forEach(q => {
   q.addEventListener('click', () => q.closest('.faq-item').classList.toggle('open'));
 });
 
-/* â”€â”€â”€ Enquiry widget â”€â”€â”€ */
+/* Enquiry widget */
 const KW_WHATSAPP = '2349055372963'; // Kay's WhatsApp (international format, digits only)
 function openEnquire(context) {
   document.getElementById('enquireBody').style.display = '';
@@ -5180,7 +5181,7 @@ loadShopData()
   .catch(maybeOpenCheckoutFromHash);
 finalizeReturnedGatewayCheckout();
 </script>
-<!-- â•â•â•â•â•â•â•â• SHOP LOADING BAR â•â•â•â•â•â•â•â• -->
+<!-- SHOP LOADING BAR -->
 <div id="shopLoadBar" style="position:fixed;top:0;left:0;height:3px;width:0;z-index:100001;background:linear-gradient(90deg,#c4845a,#c9993a);box-shadow:0 0 8px rgba(201,153,58,0.6);opacity:0;transition:width 0.25s ease,opacity 0.3s ease;pointer-events:none;"></div>
 <script>
 (function(){
@@ -5210,9 +5211,9 @@ finalizeReturnedGatewayCheckout();
   };
 })();
 </script>
-<!-- â•â•â•â•â•â•â•â• END SHOP LOADING BAR â•â•â•â•â•â•â•â• -->
+<!-- END SHOP LOADING BAR -->
 
-<!-- â•â•â•â•â•â•â•â• DIAGNOSTIC PANEL - TEMPORARY, remove this whole block once stable â•â•â•â•â•â•â•â• -->
+<!-- DIAGNOSTIC PANEL - TEMPORARY, remove this whole block once stable -->
 <div id="shopDiag" style="position:fixed;left:0;right:0;bottom:0;z-index:99999;font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:1.4;color:#e8d5b0;background:rgba(30,21,16,0.97);border-top:2px solid #c4845a;max-height:45vh;overflow:auto;display:none;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#9e4f2e;color:#fff;position:sticky;top:0;">
     <strong>SHOP DIAGNOSTIC</strong>
@@ -5233,7 +5234,7 @@ finalizeReturnedGatewayCheckout();
     if(!list.length){ body.textContent='No requests yet. Attempt a payment, then read the latest entry at the top.'; return; }
     body.textContent=list.map(function(e){
       return '['+e.t+']  '+e.url+'\n  status: '+e.status+'\n  '+e.body;
-    }).join('\n\nâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€\n\n');
+    }).join('\n\n----------\n\n');
   }
   window.__renderShopDiag=render;
   var panel=document.getElementById('shopDiag');
@@ -5250,7 +5251,7 @@ finalizeReturnedGatewayCheckout();
   render();
 })();
 </script>
-<!-- â•â•â•â•â•â•â•â• END DIAGNOSTIC PANEL â•â•â•â•â•â•â•â• -->
+<!-- END DIAGNOSTIC PANEL -->
 </body>
 </html>
 
