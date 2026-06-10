@@ -3235,22 +3235,44 @@ async function notifyOrder(customer, ref, method, checkoutQuote = null) {
     ? 'Kaduna pickup (free)'
     : `Ship to: ${customer.address}, ${customer.country}, Fee: ${fmt(quotedDeliveryNgn)} / $${quotedDeliveryUsd}${cartHasLargePrint() ? ' (tube)' : ''}`;
 
-  // 1. Record order in Supabase — decrements stock
-  try {
-    const orderRes = await fetch('/api/shop/order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(checkoutPayload(customer, method, {
-        payment_ref: ref,
-        payer_address: checkoutQuote?.payer_address || '',
-        checkout_quote: checkoutQuote,
-      })),
-    });
-    if (!orderRes.ok) {
-      const d = await orderRes.json().catch(() => ({}));
-      throw new Error(d.error || 'Order recording failed');
+  // 1. Record order in Supabase — decrements stock.
+  //    Crypto verification can race ahead of chain indexing (tzkt / ETH RPC
+  //    haven't seen the just-broadcast tx yet), which the server reports as a
+  //    409 "not confirmed yet". Retry a few times with a delay before giving up.
+  const isCrypto = ['tezos', 'eth', 'usdc', 'usdt'].includes(method);
+  const maxAttempts = isCrypto ? 6 : 1;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const orderRes = await fetch('/api/shop/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(checkoutPayload(customer, method, {
+          payment_ref: ref,
+          payer_address: checkoutQuote?.payer_address || '',
+          checkout_quote: checkoutQuote,
+        })),
+      });
+      if (orderRes.ok) { lastErr = null; break; }
+      const ed = await orderRes.json().catch(() => ({}));
+      // 409 = payment not yet confirmed on-chain → wait and retry.
+      if (orderRes.status === 409 && /confirm|not confirmed|waiting|found/i.test(ed.error || '') && attempt < maxAttempts) {
+        lastErr = new Error(ed.error || 'Awaiting on-chain confirmation');
+        await new Promise(r => setTimeout(r, 5000));
+        continue;
+      }
+      throw new Error(ed.error || 'Order recording failed');
+    } catch (e) {
+      lastErr = e;
+      // Network blip → retry for crypto; otherwise surface immediately.
+      if (isCrypto && attempt < maxAttempts) {
+        await new Promise(r => setTimeout(r, 5000));
+        continue;
+      }
+      throw e;
     }
-  } catch(e) { throw e; }
+  }
+  if (lastErr) throw lastErr;
 
   // 2. Email alert to Kay
   try {
@@ -4187,9 +4209,10 @@ document.getElementById('ethSendBtn').addEventListener('click', async () => {
       to:    toAddr,
       value: ethers.utils.parseEther(String(ethAmt)),
     });
-    const ref = 'KW-ETH-' + tx.hash;
-    await notifyOrder(d, ref, 'eth', quoteData.quote);
-    showConfirmation('eth', ref);
+    // payment_ref MUST be the raw 0x tx hash — the server verifies it against a
+    // strict regex. The KW-ETH- prefix is for display only.
+    await notifyOrder(d, tx.hash, 'eth', quoteData.quote);
+    showConfirmation('eth', 'KW-ETH-' + tx.hash);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/rejected|denied|cancel|user denied/i.test(msg)) {
@@ -4231,9 +4254,9 @@ async function sendErc20(token) {
     const amount   = ethers.utils.parseUnits(usd.toFixed(2), decimals);
 
     const tx  = await contract.transfer(toAddr, amount);
-    const ref = 'KW-' + label + '-' + tx.hash;
-    await notifyOrder(d, ref, token, quoteData.quote);
-    showConfirmation(token, ref);
+    // payment_ref MUST be the raw 0x tx hash for server verification.
+    await notifyOrder(d, tx.hash, token, quoteData.quote);
+    showConfirmation(token, 'KW-' + label + '-' + tx.hash);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/rejected|denied|cancel|user denied/i.test(msg)) {
@@ -4679,9 +4702,11 @@ document.getElementById('tezosSendBtn').addEventListener('click', async () => {
       amount: mutez,
       destination: toAddr,
     }]);
-    const ref = 'KW-XTZ-' + (opHash || Date.now());
-    await notifyOrder(d, ref, 'tezos', quoteData.quote);
-    showConfirmation('tezos', ref);
+    if (!opHash) throw new Error('Wallet did not return an operation hash');
+    // payment_ref MUST be the raw op hash — the server verifies it against a
+    // strict Tezos hash regex. The KW-XTZ- prefix is for display only.
+    await notifyOrder(d, opHash, 'tezos', quoteData.quote);
+    showConfirmation('tezos', 'KW-XTZ-' + opHash);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/reject|cancel|denied|aborted/i.test(msg)) {
